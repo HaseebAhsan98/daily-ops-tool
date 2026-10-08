@@ -1,0 +1,59 @@
+{
+  "region": "SINDH - B",
+  "employees": [
+    {
+      "sr": 69,
+      "name": "M Waqas Bhati",
+      "designation": "ZSM",
+      "doj": "01.12.24",
+      "base_town": "Hyderabad",
+      "cnic": "42301-6166095-3",
+      "contact": "0320-9098474"
+    },
+    {
+      "sr": 70,
+      "name": "M.Bachal",
+      "designation": "TSE",
+      "doj": "01.01.22",
+      "base_town": "Badin",
+      "cnic": "41105-4337883-3",
+      "contact": "0311-8418739"
+    },
+    {
+      "sr": 71,
+      "name": "Ghulam Ishaque",
+      "designation": "TSE",
+      "doj": "14.03.23",
+      "base_town": "Nawabshah",
+      "cnic": "45403-6981692-5",
+      "contact": "0312-3381554"
+    },
+    {
+      "sr": 72,
+      "name": "Adil Ali",
+      "designation": "ACTSE",
+      "doj": "01.06.24",
+      "base_town": "Berani",
+      "cnic": "44204-0372883-9",
+      "contact": "0316-2842147"
+    },
+    {
+      "sr": 73,
+      "name": "ANIS UR REHMAN",
+      "designation": "TSE",
+      "doj": "06.08.24",
+      "base_town": "Mirpurkhas",
+      "cnic": "44103-5214232-1",
+      "contact": "0315-5085025"
+    },
+    {
+      "sr": 74,
+      "name": "Umair Ali",
+      "designation": "TSE",
+      "doj": "01.01.26",
+      "base_town": "Hyderabad",
+      "cnic": "4130-43233482-3",
+      "contact": "0320-3003432"
+    }
+  ]
+}

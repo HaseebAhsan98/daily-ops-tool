@@ -1,0 +1,402 @@
+[
+  {
+    "sku": "TODAY TEA WHITENER 112 ML",
+    "category": "today",
+    "size": "112ml"
+  },
+  {
+    "sku": "TODAY TEA WHITENER 180 ML",
+    "category": "today",
+    "size": "180ml"
+  },
+  {
+    "sku": "TODAY TEA WHITENER 225 ML",
+    "category": "today",
+    "size": "225ml "
+  },
+  {
+    "sku": "MILKER STRAWBERRY 180ML",
+    "category": "Milker-FM ",
+    "size": "180ml"
+  },
+  {
+    "sku": "MILKER ZAFRAN ALMOND 180 ML",
+    "category": "Milker-FM ",
+    "size": "180ml"
+  },
+  {
+    "sku": "MILKER STRAWBERRY 200 ML",
+    "category": "Milker-FM ",
+    "size": "200ml"
+  },
+  {
+    "sku": "MILKER ZAFRAN ALMOND 200 ML",
+    "category": "Milker-FM ",
+    "size": "200ml"
+  },
+  {
+    "sku": "MILKER STRAWBERRY 225ML",
+    "category": "Milker-FM ",
+    "size": "225ml "
+  },
+  {
+    "sku": "MILKER ZAFRAN ALMOND 225 ML",
+    "category": "Milker-FM ",
+    "size": "225ml "
+  },
+  {
+    "sku": "MILKER STRAWBERRY 250 ML",
+    "category": "Milker-FM ",
+    "size": "250ml"
+  },
+  {
+    "sku": "MILKER ZAFRAN ALMOND 250 ML",
+    "category": "Milker-FM ",
+    "size": "250ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 220 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 500 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 500ml "
+  },
+  {
+    "sku": "PET BOTTLE MAAZA 1000 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maaza 1000 new"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 1000 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 1000ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 2000 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 2000ml"
+  },
+  {
+    "sku": "PET BOTTLE POLY 220 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Polly 250ml"
+  },
+  {
+    "sku": "PET BOTTLE POLLY 500 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Polly 500ml"
+  },
+  {
+    "sku": "PET BOTTLE POLLY 1000 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Polly 1000ml"
+  },
+  {
+    "sku": "PET BOTTLE POLLY 2000 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Polly 2000ml"
+  },
+  {
+    "sku": "MILKER STRAWBERRY 180 ML",
+    "category": "Milker-FM ",
+    "size": "180ml"
+  },
+  {
+    "sku": "MILKER ZAFRAN 250 ML",
+    "category": "Milker-FM ",
+    "size": "250ml"
+  },
+  {
+    "sku": "JAM-E-RAHAT 800 ML",
+    "category": "JAM-E-RAHAT",
+    "size": "800ml"
+  },
+  {
+    "sku": "Maaza 250ml Mango (TETRA)",
+    "category": "TETRA",
+    "size": "250ml"
+  },
+  {
+    "sku": "TODAY TEA WHITENER 200 ML",
+    "category": "today",
+    "size": "200ml"
+  },
+  {
+    "sku": "PET BOTTLE MAAZA 1000 ML MIX FRUIT JUICE",
+    "category": "Juices Pet Bottle",
+    "size": "Maaza 1000 new"
+  },
+  {
+    "sku": "PET BOTTLE MAAZA 1000 ML RED APPLE FRUIT JUICE",
+    "category": "Juices Pet Bottle",
+    "size": "Maaza 1000 new"
+  },
+  {
+    "sku": "DAILY MILK 250 ML",
+    "category": "Daily Milk FCM",
+    "size": "250ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 2000 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 2000ml"
+  },
+  {
+    "sku": "DAILY MILK FULL CREAM MILK 250 ML",
+    "category": "Daily Milk FCM",
+    "size": "250ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 220 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE POLY 220 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Polly 250ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 1000 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 1000ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML PEACH",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE POLY 250 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Polly 250ml"
+  },
+  {
+    "sku": "Pet Bottle Maza 250 ML Peach",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE POLY 250 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Polly 250ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "MILKER CHOCOLICIOUS 185 ML",
+    "category": "Milker-FM ",
+    "size": "200ml"
+  },
+  {
+    "sku": "MILKER CHOCOLICIOUS 235 ML",
+    "category": "Milker-FM ",
+    "size": "250ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 260 ML GUAVA",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 260 ML GUAVA",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 500 ML GUAVA",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 500ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 260 ML MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "Today Elaichi Flavor 225 ML",
+    "category": "today",
+    "size": "225ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 260 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 500 ML ORANGE MANGO",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 500ml "
+  },
+  {
+    "sku": "PET BOTTLE MAAZA 330 ML",
+    "category": "Juices Pet Bottle",
+    "size": "Maaza 330ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML POMEGRENATE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "YAZOO CHOCOLICIOUS 112 ML",
+    "category": "Yazoo-FM ",
+    "size": "112ml"
+  },
+  {
+    "sku": "YAZOO ZAFRAN , ALMOND 112 ML",
+    "category": "Yazoo-FM ",
+    "size": "112ml"
+  },
+  {
+    "sku": "PET BOTTLE MAAZA 1000 ML MIX FRUIT JUICE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 1000ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML LYCHEE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "YAZOO STRAWBERRY 112 ML",
+    "category": "Yazoo-FM ",
+    "size": "112ml"
+  },
+  {
+    "sku": "Pet Bottle Maaza Red Grapes (1000mlx06)",
+    "category": "Juices Pet Bottle",
+    "size": "Maaza 1000 new"
+  },
+  {
+    "sku": "Pet Bottle Maaza Red Grapes(330mlx12)",
+    "category": "Juices Pet Bottle",
+    "size": "Maaza 330ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML GUAVA",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "Pet Bottle Maaza Apple (330mlx12)",
+    "category": "Juices Pet Bottle",
+    "size": "Maaza 330ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 500 ML GUAVA",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 500ml "
+  },
+  {
+    "sku": "Pet Bottle Maza 250 ML Peach",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 250 ML POMEGRENATE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 250ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 500 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 500ml "
+  },
+  {
+    "sku": "MILKER BANANA 225 ML",
+    "category": "Milker-FM ",
+    "size": "200ml"
+  },
+  {
+    "sku": "MILKER DATES 225 ML",
+    "category": "Milker-FM ",
+    "size": "250ml"
+  },
+  {
+    "sku": "MILKER CHOCOLICIOUS 225 ML",
+    "category": "Milker-FM ",
+    "size": "250ml"
+  },
+  {
+    "sku": "MILKER BANANA 180 ML",
+    "category": "Milker-FM ",
+    "size": "200ml"
+  },
+  {
+    "sku": "MILKER DATES 180 ML",
+    "category": "Milker-FM ",
+    "size": "200ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 330 ML APPLE",
+    "category": "Juices Pet Bottle",
+    "size": "Maaza 330ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 2000 ML LYCHEE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 2000ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 2000 ML POMEGRENATE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 2000ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 2000 ML TROPICAL",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 2000ml"
+  },
+  {
+    "sku": "PET BOTTLE MAZA 500 ML LYCHEE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 500ml "
+  },
+  {
+    "sku": "PET BOTTLE MAZA 500 ML POMEGRENATE",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 500ml "
+  },
+  {
+    "sku": "PET BOTTLE PEACH FLAVOUR 500ML",
+    "category": "Juices Pet Bottle",
+    "size": "Maza 500ml "
+  },
+  {
+    "sku": "MILKER CHOCOLICIOUS 180 ML",
+    "category": "Milker-FM ",
+    "size": "200ml"
+  },
+  {
+    "sku": "MILKER CHOCOLICIOUS 180ML",
+    "category": "Milker-FM ",
+    "size": "200ml"
+  }
+]
