@@ -628,17 +628,6 @@ with tab_achievement_kpk:
                             milker_ach = sum(r_ach.get(("Milker-FM", sz), 0.0) for sz in ["180ml", "225ml"])
                             milker_pct = (milker_ach / milker_tgt * 100) if milker_tgt else 0.0
 
-                            # JuicePet Bottle (Maza & Polly juices)
-                            jpb_tgt = float(t.get("jpb_target", 0))
-                            jpb_ach = sum(r_ach.get(("JuicePet Bottle", sz), 0.0) for sz in [
-                                "Maza 250ml", "Polly 250ml",
-                                "Maza 500ml", "Polly 500ml",
-                                "Maza 1000ml", "Polly 1000ml",
-                                "Maza 1500ml", "Polly 1500ml",
-                                "Maza 2000ml", "Polly 2000ml",
-                            ])
-                            jpb_pct = (jpb_ach / jpb_tgt * 100) if jpb_tgt else 0.0
-
                             # Maza Chaika
                             chaika_ach = float(r_ach.get(("today", "chaika"), 0.0) + r_ach.get(("Maza Chaika", "180ml"), 0.0))
 
@@ -657,9 +646,6 @@ with tab_achievement_kpk:
                                 "Milker Target": f"{milker_tgt:,.0f}",
                                 "Milker Ach": f"{milker_ach:,.0f}",
                                 "Milker %": f"{milker_pct:.0f}%",
-                                "JuicePet Target": f"{jpb_tgt:,.0f}",
-                                "JuicePet Ach": f"{jpb_ach:,.0f}",
-                                "JuicePet %": f"{jpb_pct:.0f}%",
                                 "Maza Chaika": f"{chaika_ach:,.0f}",
                                 "Yazoo Target": f"{yazoo_tgt:,.0f}",
                                 "Yazoo Ach": f"{yazoo_ach:,.0f}",
@@ -668,7 +654,6 @@ with tab_achievement_kpk:
                                 "_raw": {
                                     "tt": today_tgt, "ta": today_ach,
                                     "mt": milker_tgt, "ma": milker_ach,
-                                    "jt": jpb_tgt, "ja": jpb_ach,
                                     "ca": chaika_ach,
                                     "yt": yazoo_tgt, "ya": yazoo_ach
                                 }
@@ -682,10 +667,6 @@ with tab_achievement_kpk:
                         vac_mt = sum(r["_raw"]["mt"] for r in preview_rows if "vaccant" in r["_tse"].lower())
                         vac_ma = sum(r["_raw"]["ma"] for r in preview_rows if "vaccant" in r["_tse"].lower())
                         vac_mp = (vac_ma / vac_mt * 100) if vac_mt else 0.0
-
-                        vac_jt = sum(r["_raw"]["jt"] for r in preview_rows if "vaccant" in r["_tse"].lower())
-                        vac_ja = sum(r["_raw"]["ja"] for r in preview_rows if "vaccant" in r["_tse"].lower())
-                        vac_jp = (vac_ja / vac_jt * 100) if vac_jt else 0.0
 
                         vac_ca = sum(r["_raw"]["ca"] for r in preview_rows if "vaccant" in r["_tse"].lower())
 
@@ -701,10 +682,6 @@ with tab_achievement_kpk:
                         gt_mt = sum(r["_raw"]["mt"] for r in preview_rows)
                         gt_ma = sum(r["_raw"]["ma"] for r in preview_rows)
                         gt_mp = (gt_ma / gt_mt * 100) if gt_mt else 0.0
-
-                        gt_jt = sum(r["_raw"]["jt"] for r in preview_rows)
-                        gt_ja = sum(r["_raw"]["ja"] for r in preview_rows)
-                        gt_jp = (gt_ja / gt_jt * 100) if gt_jp else 0.0
 
                         gt_ca = sum(r["_raw"]["ca"] for r in preview_rows)
 
@@ -725,9 +702,6 @@ with tab_achievement_kpk:
                             "Milker Target": f"{vac_mt:,.0f}",
                             "Milker Ach": f"{vac_ma:,.0f}",
                             "Milker %": f"{vac_mp:.0f}%",
-                            "JuicePet Target": f"{vac_jt:,.0f}",
-                            "JuicePet Ach": f"{vac_ja:,.0f}",
-                            "JuicePet %": f"{vac_jp:.0f}%",
                             "Maza Chaika": f"{vac_ca:,.0f}",
                             "Yazoo Target": f"{vac_yt:,.0f}",
                             "Yazoo Ach": f"{vac_ya:,.0f}",
@@ -743,9 +717,6 @@ with tab_achievement_kpk:
                             "Milker Target": f"{gt_mt:,.0f}",
                             "Milker Ach": f"{gt_ma:,.0f}",
                             "Milker %": f"{gt_mp:.0f}%",
-                            "JuicePet Target": f"{gt_jt:,.0f}",
-                            "JuicePet Ach": f"{gt_ja:,.0f}",
-                            "JuicePet %": f"{gt_jp:.0f}%",
                             "Maza Chaika": f"{gt_ca:,.0f}",
                             "Yazoo Target": f"{gt_yt:,.0f}",
                             "Yazoo Ach": f"{gt_ya:,.0f}",
@@ -777,14 +748,12 @@ with tab_achievement_kpk:
 
         tot_kpk_today = sum(t.get("today_target", t.get("today_target_tray", 0)) for t in kpk_current_targets)
         tot_kpk_milker = sum(t.get("milker_target", 0) for t in kpk_current_targets)
-        tot_kpk_jpb = sum(t.get("jpb_target", 0) for t in kpk_current_targets)
         tot_kpk_yazoo = sum(t.get("yazoo_target", 0) for t in kpk_current_targets)
 
-        km1, km2, km3, km4 = st.columns(4)
+        km1, km2, km3 = st.columns(3)
         km1.metric("today Target Trays", f"{tot_kpk_today:,.0f}")
         km2.metric("Milker-FM Target Trays", f"{tot_kpk_milker:,.0f}")
-        km3.metric("JuicePet Bottle Target Trays", f"{tot_kpk_jpb:,.0f}")
-        km4.metric("Yazoo Target Trays", f"{tot_kpk_yazoo:,.0f}")
+        km3.metric("Yazoo Target Trays", f"{tot_kpk_yazoo:,.0f}")
 
         st.write("")
 
@@ -796,11 +765,10 @@ with tab_achievement_kpk:
             "tse": st.column_config.TextColumn("TSE Range Buiness", width="medium"),
             "today_target": st.column_config.NumberColumn("today Target In Tray", min_value=0, step=25),
             "milker_target": st.column_config.NumberColumn("Milker-FM Target In Tray", min_value=0, step=500),
-            "jpb_target": st.column_config.NumberColumn("JuicePet Target In Tray", min_value=0, step=50),
             "yazoo_target": st.column_config.NumberColumn("Yazoo Target In Tray", min_value=0, step=25),
         }
         kpk_visible_cols = [
-            "sno", "distributor", "tse", "today_target", "milker_target", "jpb_target", "yazoo_target"
+            "sno", "distributor", "tse", "today_target", "milker_target", "yazoo_target"
         ]
 
         # Ensure all columns exist in df
@@ -817,7 +785,7 @@ with tab_achievement_kpk:
             key="kpk_targets_data_editor"
         )
 
-        kpk_btn_c1, kpk_btn_c2, kpk_btn_c3 = st.columns([2, 1, 1])
+        kpk_btn_c1, kpk_btn_c2 = st.columns([2, 1])
         if kpk_btn_c1.button("💾 Save KPK Target Changes", key="save_kpk_targets_btn"):
             kpk_map = {row["distributor"]: row for row in kpk_current_targets}
             for _, edited_row in kpk_edited_df.iterrows():
@@ -827,7 +795,6 @@ with tab_achievement_kpk:
                     t_entry["tse"] = str(edited_row["tse"] or "Vaccant")
                     t_entry["today_target"] = float(edited_row["today_target"] or 0)
                     t_entry["milker_target"] = float(edited_row["milker_target"] or 0)
-                    t_entry["jpb_target"] = float(edited_row["jpb_target"] or 0)
                     t_entry["yazoo_target"] = float(edited_row["yazoo_target"] or 0)
 
             updated_kpk_list = list(kpk_map.values())
@@ -835,7 +802,6 @@ with tab_achievement_kpk:
             st.success("KPK Target values kamiyabi se save ho gaye!")
             st.rerun()
 
-        KPK_SEPT_PATH = os.path.join(KPK_DATA_DIR, "targets_september_template.json")
         if kpk_btn_c2.button("↺ Reset to October Defaults", key="reset_kpk_oct_defaults"):
             if os.path.exists(KPK_DEFAULT_OCT_PATH):
                 with open(KPK_DEFAULT_OCT_PATH, encoding="utf-8") as f_def:
@@ -845,16 +811,6 @@ with tab_achievement_kpk:
                 st.rerun()
             else:
                 st.warning("KPK default targets backup file nahi mili.")
-
-        if kpk_btn_c3.button("↺ Reset to September Template", key="reset_kpk_sept_template"):
-            if os.path.exists(KPK_SEPT_PATH):
-                with open(KPK_SEPT_PATH, encoding="utf-8") as f_def:
-                    sept_kpk_targets = json.load(f_def)
-                save_kpk_targets(sept_kpk_targets)
-                st.success("September template restore ho gaya!")
-                st.rerun()
-            else:
-                st.warning("September template file nahi mili.")
 
 
 # =====================================================================

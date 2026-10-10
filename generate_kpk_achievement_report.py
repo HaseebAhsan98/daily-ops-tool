@@ -290,12 +290,12 @@ def build_kpk_sheet(wb, month_label, targets, dist_ach):
     """
     Build Sheet 2: KPK Target vs Achievement with all categories, exact colors,
     and NO 200ml/250ml in Milker-FM (Only 180ml and 225ml).
-    Total Columns: 36 (A to AJ).
+    Total Columns: 28 (A to AB).
     """
     ws = wb.create_sheet("KPK Target vs Achievement")
 
     # Row 1: Title
-    ws.merge_cells("B1:AJ1")
+    ws.merge_cells("B1:AB1")
     t = ws.cell(row=1, column=2, value="KPK TARGET VS ACHIEVEMENT - Oct-26")
     t.font = Font(name=FONT_NAME, size=14, bold=True, color="000000")
     t.fill = BLUE_TITLE_FILL
@@ -303,7 +303,7 @@ def build_kpk_sheet(wb, month_label, targets, dist_ach):
     ws.row_dimensions[1].height = 28
 
     # Row 2: Subtitle
-    ws.merge_cells("B2:AJ2")
+    ws.merge_cells("B2:AB2")
     m = ws.cell(row=2, column=2, value=month_label)
     m.font = Font(name=FONT_NAME, size=12, bold=True, color="000000")
     m.fill = BLUE_TITLE_FILL
@@ -401,27 +401,10 @@ def build_kpk_sheet(wb, month_label, targets, dist_ach):
         c.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
         c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-    # Group 5: Maza/Polly Juices Pet Bottle -> Cols AC to AJ (29 to 36)
-    ws.merge_cells("AC3:AJ3")
-    c_j = ws.cell(row=3, column=29, value="Maza/Polly Juices Pet Bottle")
-    c_j.fill = JUICES_YELLOW_FILL
-    c_j.font = Font(name=FONT_NAME, size=11, bold=True, color="000000")
-    c_j.alignment = Alignment(horizontal="center", vertical="center")
-
-    juices_sub = [
-        (29, "Target  In Tray"), (30, "250ml"), (31, "500ml"), (32, "1000ml"),
-        (33, "1500ml"), (34, "2000ml"), (35, "Ach In Tray"), (36, "Ach %")
-    ]
-    for col_idx, sub in juices_sub:
-        c = ws.cell(row=4, column=col_idx, value=sub)
-        c.fill = JUICES_YELLOW_FILL
-        c.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
-        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-
     # Format header borders and heights
     for r in (3, 4):
         ws.row_dimensions[r].height = 24
-        for col in range(1, 37):
+        for col in range(1, 29):
             ws.cell(row=r, column=col).border = BOX_BORDER
 
     # Data Rows
@@ -498,23 +481,7 @@ def build_kpk_sheet(wb, month_label, targets, dist_ach):
         ws.cell(row=r, column=27, value=f"=SUM(Y{r}:Z{r})").number_format = "#,##0"
         ws.cell(row=r, column=28, value=f"=IFERROR(AA{r}/X{r}, 0)").number_format = "0%"
 
-        # Maza/Polly Juices Pet Bottle
-        j_tgt = t.get("jpb_target", 0)
-        ws.cell(row=r, column=29, value=j_tgt).number_format = "#,##0"
-        j250 = r_ach.get(("Juices Pet Bottle", "Maza 250ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 250ml"), 0.0)
-        j500 = r_ach.get(("Juices Pet Bottle", "Maza 500ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 500ml"), 0.0)
-        j1000 = r_ach.get(("Juices Pet Bottle", "Maza 1000ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 1000ml"), 0.0)
-        j1500 = r_ach.get(("Juices Pet Bottle", "Maza 1500ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 1500ml"), 0.0)
-        j2000 = r_ach.get(("Juices Pet Bottle", "Maza 2000ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 2000ml"), 0.0)
-        ws.cell(row=r, column=30, value=j250).number_format = "#,##0"
-        ws.cell(row=r, column=31, value=j500).number_format = "#,##0"
-        ws.cell(row=r, column=32, value=j1000).number_format = "#,##0"
-        ws.cell(row=r, column=33, value=j1500).number_format = "#,##0"
-        ws.cell(row=r, column=34, value=j2000).number_format = "#,##0"
-        ws.cell(row=r, column=35, value=f"=SUM(AD{r}:AH{r})").number_format = "#,##0"
-        ws.cell(row=r, column=36, value=f"=IFERROR(AI{r}/AC{r}, 0)").number_format = "0%"
-
-        for c_idx in range(1, 37):
+        for c_idx in range(1, 29):
             cell = ws.cell(row=r, column=c_idx)
             cell.border = BOX_BORDER
             if c_idx not in (2, 3):
@@ -561,16 +528,7 @@ def build_kpk_sheet(wb, month_label, targets, dist_ach):
     ws.cell(row=r_vac, column=27, value=f'=SUM(Y{r_vac}:Z{r_vac})').number_format = "#,##0"
     ws.cell(row=r_vac, column=28, value=f'=IFERROR(AA{r_vac}/X{r_vac}, 0)').number_format = "0%"
 
-    ws.cell(row=r_vac, column=29, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", AC5:AC{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=30, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", AD5:AD{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=31, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", AE5:AE{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=32, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", AF5:AF{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=33, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", AG5:AG{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=34, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", AH5:AH{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=35, value=f'=SUM(AD{r_vac}:AH{r_vac})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=36, value=f'=IFERROR(AI{r_vac}/AC{r_vac}, 0)').number_format = "0%"
-
-    for c_idx in range(1, 37):
+    for c_idx in range(1, 29):
         cell = ws.cell(row=r_vac, column=c_idx)
         cell.fill = YELLOW_FILL
         cell.font = Font(name=FONT_NAME, size=11, bold=True)
@@ -615,16 +573,7 @@ def build_kpk_sheet(wb, month_label, targets, dist_ach):
     ws.cell(row=r_gt, column=27, value=f'=SUM(Y{r_gt}:Z{r_gt})').number_format = "#,##0"
     ws.cell(row=r_gt, column=28, value=f'=IFERROR(AA{r_gt}/X{r_gt}, 0)').number_format = "0%"
 
-    ws.cell(row=r_gt, column=29, value=f'=SUM(AC5:AC{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=30, value=f'=SUM(AD5:AD{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=31, value=f'=SUM(AE5:AE{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=32, value=f'=SUM(AF5:AF{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=33, value=f'=SUM(AG5:AG{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=34, value=f'=SUM(AH5:AH{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=35, value=f'=SUM(AD{r_gt}:AH{r_gt})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=36, value=f'=IFERROR(AI{r_gt}/AC{r_gt}, 0)').number_format = "0%"
-
-    for c_idx in range(1, 37):
+    for c_idx in range(1, 29):
         cell = ws.cell(row=r_gt, column=c_idx)
         cell.fill = YELLOW_FILL
         cell.font = Font(name=FONT_NAME, size=11, bold=True)
@@ -636,7 +585,7 @@ def build_kpk_sheet(wb, month_label, targets, dist_ach):
     ws.column_dimensions["A"].width = 6   # S.No
     ws.column_dimensions["B"].width = 44  # Distributor Name
     ws.column_dimensions["C"].width = 18  # TSE Range Buiness
-    for col_i in range(4, 37):
+    for col_i in range(4, 29):
         ws.column_dimensions[get_column_letter(col_i)].width = 12
 
     ws.freeze_panes = "D5"
@@ -651,15 +600,15 @@ def build_tse_summary_sheet(wb, month_label, targets, dist_ach):
     ws = wb.create_sheet("TSE Summary (Compact)")
 
     # Row 1: Title
-    ws.merge_cells("A1:P1")
-    t = ws.cell(row=1, column=1, value="KPK TARGET VS ACHIEVEMENT  TSE  WISE today, Milker & Juice Pet Bottle")
+    ws.merge_cells("A1:M1")
+    t = ws.cell(row=1, column=1, value="KPK TARGET VS ACHIEVEMENT  TSE  WISE today, Milker & Yazoo")
     t.font = Font(name=FONT_NAME, size=14, bold=True, color="000000")
     t.fill = BLUE_TITLE_FILL
     t.alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[1].height = 28
 
     # Row 2: Subtitle
-    ws.merge_cells("A2:P2")
+    ws.merge_cells("A2:M2")
     m = ws.cell(row=2, column=1, value=month_label)
     m.font = Font(name=FONT_NAME, size=12, bold=True, color="000000")
     m.fill = BLUE_TITLE_FILL
@@ -711,38 +660,25 @@ def build_tse_summary_sheet(wb, month_label, targets, dist_ach):
         c.font = Font(name=FONT_NAME, size=9, bold=True, color="FFFFFF")
         c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-    # Group 3: JuicePet Bottle: Col J to L (10 to 12)
-    ws.merge_cells("J3:L3")
-    c_j = ws.cell(row=3, column=10, value="JuicePet Bottle")
-    c_j.fill = YELLOW_FILL
-    c_j.font = Font(name=FONT_NAME, size=11, bold=True, color="000000")
-    c_j.alignment = Alignment(horizontal="center", vertical="center")
-
-    for col_idx, sub in [(10, "Target In Tray"), (11, "Ach In Tray"), (12, "Ach %")]:
-        c = ws.cell(row=4, column=col_idx, value=sub)
-        c.fill = YELLOW_FILL
-        c.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
-        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-
-    # Group 4: Maza Chaika: Col M (13)
-    c_ch = ws.cell(row=3, column=13, value="Maza Chaika")
+    # Group 3: Maza Chaika: Col J (10)
+    c_ch = ws.cell(row=3, column=10, value="Maza Chaika")
     c_ch.fill = PEACH_FILL
     c_ch.font = Font(name=FONT_NAME, size=11, bold=True, color="000000")
     c_ch.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-    c_ch_sub = ws.cell(row=4, column=13, value="In tray")
+    c_ch_sub = ws.cell(row=4, column=10, value="In tray")
     c_ch_sub.fill = PEACH_FILL
     c_ch_sub.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
     c_ch_sub.alignment = Alignment(horizontal="center", vertical="center")
 
-    # Group 5: Yazoo: Col N to P (14 to 16)
-    ws.merge_cells("N3:P3")
-    c_y = ws.cell(row=3, column=14, value="Yazoo")
+    # Group 4: Yazoo: Col K to M (11 to 13)
+    ws.merge_cells("K3:M3")
+    c_y = ws.cell(row=3, column=11, value="Yazoo")
     c_y.fill = YAZOO_RED_FILL
     c_y.font = Font(name=FONT_NAME, size=11, bold=True, color="FFFFFF")
     c_y.alignment = Alignment(horizontal="center", vertical="center")
 
-    for col_idx, sub in [(14, "Targ In tray"), (15, "Ach In tray"), (16, "Ach %")]:
+    for col_idx, sub in [(11, "Targ In tray"), (12, "Ach In tray"), (13, "Ach %")]:
         c = ws.cell(row=4, column=col_idx, value=sub)
         c.fill = YAZOO_RED_FILL
         c.font = Font(name=FONT_NAME, size=9, bold=True, color="FFFFFF")
@@ -750,7 +686,7 @@ def build_tse_summary_sheet(wb, month_label, targets, dist_ach):
 
     for r in (3, 4):
         ws.row_dimensions[r].height = 24
-        for col in range(1, 17):
+        for col in range(1, 14):
             ws.cell(row=r, column=col).border = BOX_BORDER
 
     start_r = 5
@@ -781,22 +717,17 @@ def build_tse_summary_sheet(wb, month_label, targets, dist_ach):
         ws.cell(row=r, column=8, value=f"='KPK Target vs Achievement'!V{r}").number_format = "#,##0"
         ws.cell(row=r, column=9, value=f"=IFERROR(H{r}/G{r}, 0)").number_format = "0%"
 
-        # JuicePet Bottle
-        ws.cell(row=r, column=10, value=f"='KPK Target vs Achievement'!AC{r}").number_format = "#,##0"
-        ws.cell(row=r, column=11, value=f"='KPK Target vs Achievement'!AI{r}").number_format = "#,##0"
-        ws.cell(row=r, column=12, value=f"=IFERROR(K{r}/J{r}, 0)").number_format = "0%"
-
         # Maza Chaika
         r_ach = dist_ach.get(dist_name, {})
         chaika_ach = r_ach.get(("today", "chaika"), 0.0) + r_ach.get(("Maza Chaika", "180ml"), 0.0)
-        ws.cell(row=r, column=13, value=chaika_ach).number_format = "#,##0"
+        ws.cell(row=r, column=10, value=chaika_ach).number_format = "#,##0"
 
         # Yazoo
-        ws.cell(row=r, column=14, value=f"='KPK Target vs Achievement'!M{r}").number_format = "#,##0"
-        ws.cell(row=r, column=15, value=f"='KPK Target vs Achievement'!Q{r}").number_format = "#,##0"
-        ws.cell(row=r, column=16, value=f"=IFERROR(O{r}/N{r}, 0)").number_format = "0%"
+        ws.cell(row=r, column=11, value=f"='KPK Target vs Achievement'!M{r}").number_format = "#,##0"
+        ws.cell(row=r, column=12, value=f"='KPK Target vs Achievement'!Q{r}").number_format = "#,##0"
+        ws.cell(row=r, column=13, value=f"=IFERROR(L{r}/K{r}, 0)").number_format = "0%"
 
-        for c_idx in range(1, 17):
+        for c_idx in range(1, 14):
             cell = ws.cell(row=r, column=c_idx)
             cell.border = BOX_BORDER
             if c_idx not in (2, 3):
@@ -822,16 +753,12 @@ def build_tse_summary_sheet(wb, month_label, targets, dist_ach):
     ws.cell(row=r_vac, column=9, value=f'=IFERROR(H{r_vac}/G{r_vac}, 0)').number_format = "0%"
 
     ws.cell(row=r_vac, column=10, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", J5:J{end_r})').number_format = "#,##0"
+
     ws.cell(row=r_vac, column=11, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", K5:K{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=12, value=f'=IFERROR(K{r_vac}/J{r_vac}, 0)').number_format = "0%"
+    ws.cell(row=r_vac, column=12, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", L5:L{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=13, value=f'=IFERROR(L{r_vac}/K{r_vac}, 0)').number_format = "0%"
 
-    ws.cell(row=r_vac, column=13, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", M5:M{end_r})').number_format = "#,##0"
-
-    ws.cell(row=r_vac, column=14, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", N5:N{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=15, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", O5:O{end_r})').number_format = "#,##0"
-    ws.cell(row=r_vac, column=16, value=f'=IFERROR(O{r_vac}/N{r_vac}, 0)').number_format = "0%"
-
-    for c_idx in range(1, 17):
+    for c_idx in range(1, 14):
         cell = ws.cell(row=r_vac, column=c_idx)
         cell.fill = YELLOW_FILL
         cell.font = Font(name=FONT_NAME, size=11, bold=True)
@@ -856,16 +783,12 @@ def build_tse_summary_sheet(wb, month_label, targets, dist_ach):
     ws.cell(row=r_gt, column=9, value=f'=IFERROR(H{r_gt}/G{r_gt}, 0)').number_format = "0%"
 
     ws.cell(row=r_gt, column=10, value=f'=SUM(J5:J{end_r})').number_format = "#,##0"
+
     ws.cell(row=r_gt, column=11, value=f'=SUM(K5:K{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=12, value=f'=IFERROR(K{r_gt}/J{r_gt}, 0)').number_format = "0%"
+    ws.cell(row=r_gt, column=12, value=f'=SUM(L5:L{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=13, value=f'=IFERROR(L{r_gt}/K{r_gt}, 0)').number_format = "0%"
 
-    ws.cell(row=r_gt, column=13, value=f'=SUM(M5:M{end_r})').number_format = "#,##0"
-
-    ws.cell(row=r_gt, column=14, value=f'=SUM(N5:N{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=15, value=f'=SUM(O5:O{end_r})').number_format = "#,##0"
-    ws.cell(row=r_gt, column=16, value=f'=IFERROR(O{r_gt}/N{r_gt}, 0)').number_format = "0%"
-
-    for c_idx in range(1, 17):
+    for c_idx in range(1, 14):
         cell = ws.cell(row=r_gt, column=c_idx)
         cell.fill = YELLOW_FILL
         cell.font = Font(name=FONT_NAME, size=11, bold=True)
@@ -875,8 +798,8 @@ def build_tse_summary_sheet(wb, month_label, targets, dist_ach):
 
     col_widths = {
         "A": 6, "B": 44, "C": 18, "D": 13, "E": 12, "F": 12,
-        "G": 13, "H": 13, "I": 11, "J": 13, "K": 13, "L": 11,
-        "M": 12, "N": 12, "O": 12, "P": 11
+        "G": 13, "H": 13, "I": 11, "J": 12, "K": 12, "L": 12,
+        "M": 11
     }
     for col_l, w in col_widths.items():
         ws.column_dimensions[col_l].width = w
