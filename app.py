@@ -10,6 +10,7 @@ Needs these 2 image files in the SAME folder as this script:
 """
 
 import os
+import json
 import base64
 import tempfile
 import pandas as pd
@@ -21,6 +22,16 @@ from generate_achievement_report import (
     set_month_log, add_day_to_log, build_workbook as build_achievement_workbook,
     load_reference_data, save_targets, extract_date_range_label, load_cumulative_log,
     aggregate_achievements
+)
+from generate_kpk_achievement_report import (
+    set_month_log as set_kpk_month_log,
+    add_day_to_log as add_kpk_day_to_log,
+    build_workbook as build_kpk_achievement_workbook,
+    load_reference_data as load_kpk_reference_data,
+    save_targets as save_kpk_targets,
+    extract_date_range_label as extract_kpk_date_range_label,
+    load_cumulative_log as load_kpk_cumulative_log,
+    aggregate_achievements as aggregate_kpk_achievements
 )
 from generate_monthly_attendance import load_employees, build_workbook as build_monthly_attendance, CL_ALLOWED
 from datetime import datetime as _dt
@@ -99,8 +110,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_attendance, tab_dispatch, tab_achievement, tab_monthly = st.tabs(
-    ["📋 Attendance", "🚚 Dispatch Report", "📊 Target Achievement", "🗓️ Monthly Attendance"])
+tab_attendance, tab_dispatch, tab_achievement_hyd, tab_achievement_kpk, tab_monthly = st.tabs(
+    ["📋 Attendance", "🚚 Dispatch Report", "📊 Target Achievement (HYD)", "📊 Target Achievement (KPK)", "🗓️ Monthly Attendance"]
+)
 
 # =====================================================================
 # TAB 1: ATTENDANCE
@@ -216,7 +228,7 @@ with tab_dispatch:
 # =====================================================================
 # TAB 3: TARGET ACHIEVEMENT (HYD)
 # =====================================================================
-with tab_achievement:
+with tab_achievement_hyd:
     st.markdown(
         "<p style='text-align:center; color:#444;'>Hyderabad Target vs Achievement Report: ERP dispatch data paste karein, monthly targets manage karein, aur complete multi-sheet Excel report generate karein.</p>",
         unsafe_allow_html=True,
@@ -502,7 +514,287 @@ with tab_achievement:
 
 
 # =====================================================================
-# TAB 4: MONTHLY ATTENDANCE
+# TAB 4: TARGET ACHIEVEMENT (KPK)
+# =====================================================================
+with tab_achievement_kpk:
+    st.markdown(
+        "<p style='text-align:center; color:#444;'>KPK Target vs Achievement Report: ERP dispatch data paste karein, monthly targets manage karein, aur complete single-sheet Excel report generate karein.</p>",
+        unsafe_allow_html=True,
+    )
+    st.write("")
+
+    KPK_LOG_PATH = os.path.join(BASE_DIR, "kpk_achievement_log.json")
+    KPK_DATA_DIR = os.path.join(BASE_DIR, "kpk_data")
+    KPK_DEFAULT_OCT_PATH = os.path.join(KPK_DATA_DIR, "targets_october_default.json")
+
+    subtab_kpk_report, subtab_kpk_targets = st.tabs(
+        ["📊 Generate Report", "🎯 Set & Edit Monthly Targets"]
+    )
+
+    with subtab_kpk_report:
+        _, _, kpk_all_targets = load_kpk_reference_data()
+
+        kpk_raw_text = st.text_area(
+            "Raw dispatch data yahan paste karein (ERP se copy kiya hua)",
+            height=250,
+            placeholder="Date: 2026-10-01 to 2026-10-04\nSr.#\tLocation\tOB User:\tOB Date:\tDO#\tDN#\tDN/Dispatch Date\tWorking Area:\tParty Name\tVehicle#\tBilty#\tFreight:\tRemarks\tFlavors\tTotal\nItem Name:\tCase Count\tQty:\n...",
+            key="kpk_ach_raw",
+        )
+
+        detected_kpk_lbl = extract_kpk_date_range_label(kpk_raw_text) if kpk_raw_text.strip() else ""
+        default_kpk_lbl = detected_kpk_lbl if detected_kpk_lbl else "Month of  01 TO " + _dt.today().strftime("%d-%b-%Y").upper()
+
+        col_kpk_mode, col_kpk_lbl = st.columns([1, 1])
+        with col_kpk_mode:
+            kpk_data_mode = st.radio(
+                "Data Mode:",
+                [
+                    "🔄 Full Month Data (Replaces current month log with pasted data)",
+                    "➕ Append Daily Data (Adds new dispatches to existing cumulative log)",
+                ],
+                key="kpk_ach_mode"
+            )
+        with col_kpk_lbl:
+            kpk_month_label = st.text_input("Month Label (Excel sheet header)", value=default_kpk_lbl, key="kpk_ach_month_label")
+
+        col_kpk_add, col_kpk_reset = st.columns([3, 1])
+        with col_kpk_add:
+            kpk_add_clicked = st.button("🚀 Generate KPK Achievement Report", key="kpk_ach_generate")
+        with col_kpk_reset:
+            kpk_reset_clicked = st.button("🗑️ Reset KPK Month Data", key="kpk_ach_reset")
+
+        if kpk_reset_clicked:
+            if os.path.exists(KPK_LOG_PATH):
+                os.remove(KPK_LOG_PATH)
+            st.success("KPK cumulative log clear ho gaya — naya mahina shuru karein.")
+
+        if kpk_add_clicked:
+            if not kpk_raw_text.strip():
+                st.error("Pehle raw dispatch data paste karein.")
+            elif not kpk_month_label.strip():
+                st.error("Month label daalein.")
+            else:
+                out_path = None
+                try:
+                    if "Full Month Data" in kpk_data_mode:
+                        rows, added, total_parsed = set_kpk_month_log(KPK_LOG_PATH, kpk_raw_text)
+                        st.info(f"Full month data loaded: {len(rows)} rows parsed successfully.")
+                    else:
+                        rows, added, total_parsed = add_kpk_day_to_log(KPK_LOG_PATH, kpk_raw_text)
+                        st.info(f"{added} nayi rows add huin (parsed {total_parsed}). Cumulative total: {len(rows)} rows.")
+
+                    if not rows:
+                        st.error("Data parse nahi ho saka — ERP text format check karein.")
+                    else:
+                        out_path = os.path.join(tempfile.gettempdir(), f"KPK_Achievement_Report_{kpk_month_label.replace(' ', '_').replace('/', '_')}.xlsx")
+                        out_path, unmatched = build_kpk_achievement_workbook(rows, kpk_month_label, out_path)
+
+                        if unmatched:
+                            st.warning(f"Ye SKU names Catgery mapping mein nahi milin: {', '.join(sorted(unmatched))}")
+
+                        total_shipped_trays = sum(float(r.get("qty", 0)) for r in rows)
+                        c1, c2, c3 = st.columns(3)
+                        c1.metric("Total Items Shipped", len(rows))
+                        c2.metric("Total Trays Shipped", f"{total_shipped_trays:,.0f}")
+                        c3.metric("Report Date Range", kpk_month_label)
+
+                        with open(out_path, "rb") as f:
+                            st.download_button(
+                                "📥 Download KPK Achievement Report (.xlsx)",
+                                f.read(),
+                                file_name=f"KPK_Achievement_Report_{kpk_month_label.replace(' ', '_').replace('/', '_')}.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                key="kpk_ach_download",
+                            )
+
+                        st.write("---")
+                        st.subheader("📊 KPK Report Preview (Single Sheet)")
+                        sku_lookup, party_lookup, targets_list = load_kpk_reference_data()
+                        dist_ach, _ = aggregate_kpk_achievements(rows, sku_lookup, party_lookup)
+
+                        preview_rows = []
+                        for t in targets_list:
+                            dist_name = t["distributor"]
+                            r_ach = dist_ach.get(dist_name, {})
+
+                            # today
+                            t112 = r_ach.get(("today", "112ml"), 0.0)
+                            t180 = r_ach.get(("today", "180ml"), 0.0)
+                            t225 = r_ach.get(("today", "225ml"), 0.0)
+                            today_ach_tray = t112 + t180 + t225
+                            today_tgt_tray = t.get("today_target_tray", 0)
+                            today_pct = (today_ach_tray / today_tgt_tray * 100) if today_tgt_tray else 0.0
+
+                            # Yazoo
+                            y112 = r_ach.get(("Yazoo-FM", "112ml"), 0.0)
+                            y180 = r_ach.get(("Yazoo-FM", "180ml"), 0.0)
+                            y225 = r_ach.get(("Yazoo-FM", "225ml"), 0.0)
+                            y_ach = y112 + y180 + y225
+                            y_tgt = t.get("yazoo_target", 0)
+                            y_pct = (y_ach / y_tgt * 100) if y_tgt else 0.0
+
+                            # Milker
+                            m180 = r_ach.get(("Milker-FM", "180ml"), 0.0)
+                            m225 = r_ach.get(("Milker-FM", "225ml"), 0.0)
+                            m_ach = m180 + m225
+                            m_tgt = t.get("milker_target", 0)
+                            m_pct = (m_ach / m_tgt * 100) if m_tgt else 0.0
+
+                            # Maaza
+                            mz330 = r_ach.get(("Juices Pet Bottle", "Maaza 330ml"), 0.0)
+                            mz1000 = r_ach.get(("Juices Pet Bottle", "Maaza 1000 new"), 0.0)
+                            mz_ach = mz330 + mz1000
+                            mz_tgt = t.get("maaza_target", 0)
+                            mz_pct = (mz_ach / mz_tgt * 100) if mz_tgt else 0.0
+
+                            # Juices Pet Bottle
+                            j_ach = sum(r_ach.get(("Juices Pet Bottle", sz), 0.0) for sz in [
+                                "Maza 250ml", "Maza 500ml", "Maza 1000ml", "Maza 1500ml", "Maza 2000ml",
+                                "Polly 250ml", "Polly 500ml", "Polly 1000ml", "Polly 1500ml", "Polly 2000ml"
+                            ])
+                            j_tgt = t.get("jpb_target", 0)
+                            j_pct = (j_ach / j_tgt * 100) if j_tgt else 0.0
+
+                            preview_rows.append({
+                                "S.No": t["sno"],
+                                "Distributor": dist_name,
+                                "today Tgt": today_tgt_tray,
+                                "today Ach": today_ach_tray,
+                                "today %": f"{today_pct:.1f}%",
+                                "Yazoo Tgt": y_tgt,
+                                "Yazoo Ach": y_ach,
+                                "Yazoo %": f"{y_pct:.1f}%",
+                                "Milker Tgt": m_tgt,
+                                "Milker Ach": m_ach,
+                                "Milker %": f"{m_pct:.1f}%",
+                                "Maaza Tgt": mz_tgt,
+                                "Maaza Ach": mz_ach,
+                                "Maaza %": f"{mz_pct:.1f}%",
+                                "Juices Tgt": j_tgt,
+                                "Juices Ach": j_ach,
+                                "Juices %": f"{j_pct:.1f}%",
+                            })
+
+                        kpk_tab1, kpk_tab2 = st.tabs(["📊 Target vs Achievement Preview", "📋 Summary Log Preview"])
+                        with kpk_tab1:
+                            st.dataframe(pd.DataFrame(preview_rows), use_container_width=True, hide_index=True)
+                        with kpk_tab2:
+                            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+                except Exception as e:
+                    st.error(f"Kuch ghalat hua: {e}")
+                finally:
+                    if out_path and os.path.exists(out_path):
+                        os.remove(out_path)
+
+    with subtab_kpk_targets:
+        st.markdown(
+            """
+            **KPK Monthly Targets Setup:**
+            Yahan se aap KPK ke tamam distributors ke liye monthly targets set aur update kar sakte hain.
+            Table direct edit karein aur **💾 Save KPK Target Changes** par click karein.
+            """
+        )
+
+        _, _, kpk_current_targets = load_kpk_reference_data()
+
+        tot_kpk_today_tray = sum(t.get("today_target_tray", 0) for t in kpk_current_targets)
+        tot_kpk_today_lit = sum(t.get("today_target_liters", 0.0) for t in kpk_current_targets)
+        tot_kpk_yazoo = sum(t.get("yazoo_target", 0) for t in kpk_current_targets)
+        tot_kpk_milker = sum(t.get("milker_target", 0) for t in kpk_current_targets)
+        tot_kpk_maaza = sum(t.get("maaza_target", 0) for t in kpk_current_targets)
+        tot_kpk_jpb = sum(t.get("jpb_target", 0) for t in kpk_current_targets)
+
+        km1, km2, km3, km4, km5 = st.columns(5)
+        km1.metric("today TW Trays", f"{tot_kpk_today_tray:,.0f}", f"{tot_kpk_today_lit:,.0f} L")
+        km2.metric("Yazoo-FM Trays", f"{tot_kpk_yazoo:,.0f}")
+        km3.metric("Milker-FM Trays", f"{tot_kpk_milker:,.0f}")
+        km4.metric("Maaza Trays", f"{tot_kpk_maaza:,.0f}")
+        km5.metric("Juices Pet Trays", f"{tot_kpk_jpb:,.0f}")
+
+        st.write("")
+
+        kpk_target_df = pd.DataFrame(kpk_current_targets)
+
+        kpk_col_config = {
+            "sno": st.column_config.NumberColumn("S.No", disabled=True, width="small"),
+            "distributor": st.column_config.TextColumn("Distributor Name", disabled=True, width="large"),
+            "today_112": st.column_config.NumberColumn("today 112ml", min_value=0, step=10),
+            "today_180": st.column_config.NumberColumn("today 180ml", min_value=0, step=10),
+            "today_225": st.column_config.NumberColumn("today 225ml", min_value=0, step=10),
+            "yazoo_112": st.column_config.NumberColumn("Yazoo 112ml", min_value=0, step=10),
+            "milker_180": st.column_config.NumberColumn("Milker 180ml", min_value=0, step=500),
+            "milker_225": st.column_config.NumberColumn("Milker 225ml", min_value=0, step=500),
+            "maaza_target": st.column_config.NumberColumn("Maaza Target", min_value=0, step=50),
+            "jpb_250": st.column_config.NumberColumn("Juice 250ml", min_value=0, step=50),
+            "jpb_500": st.column_config.NumberColumn("Juice 500ml", min_value=0, step=50),
+            "jpb_1000": st.column_config.NumberColumn("Juice 1000ml", min_value=0, step=50),
+            "jpb_1500": st.column_config.NumberColumn("Juice 1500ml", min_value=0, step=50),
+            "jpb_2000": st.column_config.NumberColumn("Juice 2000ml", min_value=0, step=50),
+        }
+        kpk_visible_cols = [
+            "sno", "distributor", "today_112", "today_180", "today_225",
+            "yazoo_112", "milker_180", "milker_225", "maaza_target",
+            "jpb_250", "jpb_500", "jpb_1000", "jpb_1500", "jpb_2000"
+        ]
+
+        kpk_edited_df = st.data_editor(
+            kpk_target_df[kpk_visible_cols],
+            column_config=kpk_col_config,
+            use_container_width=True,
+            hide_index=True,
+            num_rows="fixed",
+            key="kpk_targets_data_editor"
+        )
+
+        kpk_btn_c1, kpk_btn_c2 = st.columns([3, 1])
+        if kpk_btn_c1.button("💾 Save KPK Target Changes", key="save_kpk_targets_btn"):
+            kpk_map = {row["distributor"]: row for row in kpk_current_targets}
+            for _, edited_row in kpk_edited_df.iterrows():
+                d_name = edited_row["distributor"]
+                if d_name in kpk_map:
+                    t_entry = kpk_map[d_name]
+                    t_entry["today_112"] = float(edited_row["today_112"] or 0)
+                    t_entry["today_180"] = float(edited_row["today_180"] or 0)
+                    t_entry["today_225"] = float(edited_row["today_225"] or 0)
+                    t_entry["today_target_tray"] = t_entry["today_112"] + t_entry["today_180"] + t_entry["today_225"]
+                    t_entry["today_target_liters"] = round(
+                        t_entry["today_112"] * 2.688 + t_entry["today_180"] * 4.32 + t_entry["today_225"] * 6.075, 2
+                    )
+                    t_entry["yazoo_112"] = float(edited_row["yazoo_112"] or 0)
+                    t_entry["yazoo_target"] = t_entry["yazoo_112"]
+                    t_entry["milker_180"] = float(edited_row["milker_180"] or 0)
+                    t_entry["milker_225"] = float(edited_row["milker_225"] or 0)
+                    t_entry["milker_target"] = t_entry["milker_180"] + t_entry["milker_225"]
+                    t_entry["maaza_target"] = float(edited_row["maaza_target"] or 0)
+                    t_entry["jpb_250"] = float(edited_row["jpb_250"] or 0)
+                    t_entry["jpb_500"] = float(edited_row["jpb_500"] or 0)
+                    t_entry["jpb_1000"] = float(edited_row["jpb_1000"] or 0)
+                    t_entry["jpb_1500"] = float(edited_row["jpb_1500"] or 0)
+                    t_entry["jpb_2000"] = float(edited_row["jpb_2000"] or 0)
+                    t_entry["jpb_target"] = (
+                        t_entry["jpb_250"] + t_entry["jpb_500"] + t_entry["jpb_1000"] +
+                        t_entry["jpb_1500"] + t_entry["jpb_2000"]
+                    )
+
+            updated_kpk_list = list(kpk_map.values())
+            save_kpk_targets(updated_kpk_list)
+            st.success("KPK Target values kamiyabi se save ho gaye!")
+            st.rerun()
+
+        if kpk_btn_c2.button("↺ Reset KPK to October Defaults", key="reset_kpk_oct_defaults"):
+            if os.path.exists(KPK_DEFAULT_OCT_PATH):
+                with open(KPK_DEFAULT_OCT_PATH, encoding="utf-8") as f_def:
+                    default_kpk_targets = json.load(f_def)
+                save_kpk_targets(default_kpk_targets)
+                st.success("KPK October 2026 ke default targets restore ho gaye!")
+                st.rerun()
+            else:
+                st.warning("KPK default targets backup file nahi mili.")
+
+
+# =====================================================================
+# TAB 5: MONTHLY ATTENDANCE
 # =====================================================================
 with tab_monthly:
     st.markdown(
