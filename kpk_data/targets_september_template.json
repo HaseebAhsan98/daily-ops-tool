@@ -1,0 +1,82 @@
+[
+  {
+    "sno": 1,
+    "distributor": "Haji Barkatullah & Co. Peshawar (Mega Distributor) Dairy",
+    "tse": "Abdul Qadir",
+    "today_target": 0,
+    "milker_target": 0,
+    "jpb_target": 0,
+    "chaika_target": 0,
+    "yazoo_target": 0
+  },
+  {
+    "sno": 2,
+    "distributor": "Badshah Traders-Mardan (Mega Distributor) Dairy",
+    "tse": "JOHOR ALI",
+    "today_target": 0,
+    "milker_target": 0,
+    "jpb_target": 0,
+    "chaika_target": 0,
+    "yazoo_target": 0
+  },
+  {
+    "sno": 3,
+    "distributor": "Haris Traders & Commission Agent-Karak (Mega Distributor) Dairy",
+    "tse": "Vaccant",
+    "today_target": 0,
+    "milker_target": 0,
+    "jpb_target": 0,
+    "chaika_target": 0,
+    "yazoo_target": 0
+  },
+  {
+    "sno": 4,
+    "distributor": "Tariq Traders-Mingora Swat (Mega Distributor) Dairy",
+    "tse": "Vaccant",
+    "today_target": 0,
+    "milker_target": 0,
+    "jpb_target": 0,
+    "chaika_target": 0,
+    "yazoo_target": 0
+  },
+  {
+    "sno": 5,
+    "distributor": "Nowroz & Sons-Kohat ( Mega Distributor) Dairy",
+    "tse": "Vaccant",
+    "today_target": 0,
+    "milker_target": 0,
+    "jpb_target": 0,
+    "chaika_target": 0,
+    "yazoo_target": 0
+  },
+  {
+    "sno": 6,
+    "distributor": "Ahmad Traders-Kohat (Mega Distributor) Dairy",
+    "tse": "Vaccant",
+    "today_target": 0,
+    "milker_target": 0,
+    "jpb_target": 0,
+    "chaika_target": 0,
+    "yazoo_target": 0
+  },
+  {
+    "sno": 7,
+    "distributor": "Hafiz Traders-D.I Khan (MEGA Distributor) Dairy",
+    "tse": "Vaccant",
+    "today_target": 0,
+    "milker_target": 0,
+    "jpb_target": 0,
+    "chaika_target": 0,
+    "yazoo_target": 0
+  },
+  {
+    "sno": 8,
+    "distributor": "Vaccent",
+    "tse": "Vaccant",
+    "today_target": 7000,
+    "milker_target": 200000,
+    "jpb_target": 44000,
+    "chaika_target": 0,
+    "yazoo_target": 3500
+  }
+]

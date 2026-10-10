@@ -608,76 +608,147 @@ with tab_achievement_kpk:
                             )
 
                         st.write("---")
-                        st.subheader("📊 KPK Report Preview (Single Sheet)")
+                        st.subheader("📊 KPK Report Preview (TSE Wise today, Milker & Juice Pet Bottle)")
                         sku_lookup, party_lookup, targets_list = load_kpk_reference_data()
                         dist_ach, _ = aggregate_kpk_achievements(rows, sku_lookup, party_lookup)
 
                         preview_rows = []
                         for t in targets_list:
                             dist_name = t["distributor"]
+                            tse_name = t.get("tse", "")
                             r_ach = dist_ach.get(dist_name, {})
 
                             # today
-                            t112 = r_ach.get(("today", "112ml"), 0.0)
-                            t180 = r_ach.get(("today", "180ml"), 0.0)
-                            t225 = r_ach.get(("today", "225ml"), 0.0)
-                            today_ach_tray = t112 + t180 + t225
-                            today_tgt_tray = t.get("today_target_tray", 0)
-                            today_pct = (today_ach_tray / today_tgt_tray * 100) if today_tgt_tray else 0.0
+                            today_tgt = float(t.get("today_target", t.get("today_target_tray", 0)))
+                            today_ach = float(r_ach.get("today", 0.0))
+                            today_pct = (today_ach / today_tgt * 100) if today_tgt else 0.0
 
-                            # Yazoo
-                            y112 = r_ach.get(("Yazoo-FM", "112ml"), 0.0)
-                            y180 = r_ach.get(("Yazoo-FM", "180ml"), 0.0)
-                            y225 = r_ach.get(("Yazoo-FM", "225ml"), 0.0)
-                            y_ach = y112 + y180 + y225
-                            y_tgt = t.get("yazoo_target", 0)
-                            y_pct = (y_ach / y_tgt * 100) if y_tgt else 0.0
+                            # Milker-FM
+                            milker_tgt = float(t.get("milker_target", 0))
+                            milker_ach = float(r_ach.get("Milker-FM", 0.0))
+                            milker_pct = (milker_ach / milker_tgt * 100) if milker_tgt else 0.0
 
-                            # Milker
-                            m180 = r_ach.get(("Milker-FM", "180ml"), 0.0)
-                            m225 = r_ach.get(("Milker-FM", "225ml"), 0.0)
-                            m_ach = m180 + m225
-                            m_tgt = t.get("milker_target", 0)
-                            m_pct = (m_ach / m_tgt * 100) if m_tgt else 0.0
+                            # JuicePet Bottle
+                            jpb_tgt = float(t.get("jpb_target", 0))
+                            jpb_ach = float(r_ach.get("JuicePet Bottle", 0.0))
+                            jpb_pct = (jpb_ach / jpb_tgt * 100) if jpb_tgt else 0.0
 
-                            # Maaza
-                            mz330 = r_ach.get(("Juices Pet Bottle", "Maaza 330ml"), 0.0)
-                            mz1000 = r_ach.get(("Juices Pet Bottle", "Maaza 1000 new"), 0.0)
-                            mz_ach = mz330 + mz1000
-                            mz_tgt = t.get("maaza_target", 0)
-                            mz_pct = (mz_ach / mz_tgt * 100) if mz_tgt else 0.0
+                            # Maza Chaika
+                            chaika_ach = float(r_ach.get("Maza Chaika", 0.0))
 
-                            # Juices Pet Bottle
-                            j_ach = sum(r_ach.get(("Juices Pet Bottle", sz), 0.0) for sz in [
-                                "Maza 250ml", "Maza 500ml", "Maza 1000ml", "Maza 1500ml", "Maza 2000ml",
-                                "Polly 250ml", "Polly 500ml", "Polly 1000ml", "Polly 1500ml", "Polly 2000ml"
-                            ])
-                            j_tgt = t.get("jpb_target", 0)
-                            j_pct = (j_ach / j_tgt * 100) if j_tgt else 0.0
+                            # Yazo
+                            yazo_tgt = float(t.get("yazoo_target", 0))
+                            yazo_ach = float(r_ach.get("Yazo", 0.0))
+                            yazo_pct = (yazo_ach / yazo_tgt * 100) if yazo_tgt else 0.0
 
                             preview_rows.append({
-                                "S.No": t["sno"],
-                                "Distributor": dist_name,
-                                "today Tgt": today_tgt_tray,
-                                "today Ach": today_ach_tray,
-                                "today %": f"{today_pct:.1f}%",
-                                "Yazoo Tgt": y_tgt,
-                                "Yazoo Ach": y_ach,
-                                "Yazoo %": f"{y_pct:.1f}%",
-                                "Milker Tgt": m_tgt,
-                                "Milker Ach": m_ach,
-                                "Milker %": f"{m_pct:.1f}%",
-                                "Maaza Tgt": mz_tgt,
-                                "Maaza Ach": mz_ach,
-                                "Maaza %": f"{mz_pct:.1f}%",
-                                "Juices Tgt": j_tgt,
-                                "Juices Ach": j_ach,
-                                "Juices %": f"{j_pct:.1f}%",
+                                "S.No": t.get("sno", ""),
+                                "Distributor Name": dist_name,
+                                "TSE Range Buiness": tse_name,
+                                "today Target": f"{today_tgt:,.0f}",
+                                "today Ach": f"{today_ach:,.0f}",
+                                "today %": f"{today_pct:.0f}%",
+                                "Milker Target": f"{milker_tgt:,.0f}",
+                                "Milker Ach": f"{milker_ach:,.0f}",
+                                "Milker %": f"{milker_pct:.0f}%",
+                                "JuicePet Target": f"{jpb_tgt:,.0f}",
+                                "JuicePet Ach": f"{jpb_ach:,.0f}",
+                                "JuicePet %": f"{jpb_pct:.0f}%",
+                                "Maza Chaika": f"{chaika_ach:,.0f}",
+                                "Yazo Target": f"{yazo_tgt:,.0f}",
+                                "Yazo Ach": f"{yazo_ach:,.0f}",
+                                "Yazo %": f"{yazo_pct:.0f}%",
+                                "_tse": tse_name,
+                                "_raw": {
+                                    "tt": today_tgt, "ta": today_ach,
+                                    "mt": milker_tgt, "ma": milker_ach,
+                                    "jt": jpb_tgt, "ja": jpb_ach,
+                                    "ca": chaika_ach,
+                                    "yt": yazo_tgt, "ya": yazo_ach
+                                }
                             })
+
+                        # Summary calculations
+                        vac_tt = sum(r["_raw"]["tt"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+                        vac_ta = sum(r["_raw"]["ta"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+                        vac_tp = (vac_ta / vac_tt * 100) if vac_tt else 0.0
+
+                        vac_mt = sum(r["_raw"]["mt"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+                        vac_ma = sum(r["_raw"]["ma"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+                        vac_mp = (vac_ma / vac_mt * 100) if vac_mt else 0.0
+
+                        vac_jt = sum(r["_raw"]["jt"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+                        vac_ja = sum(r["_raw"]["ja"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+                        vac_jp = (vac_ja / vac_jt * 100) if vac_jt else 0.0
+
+                        vac_ca = sum(r["_raw"]["ca"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+
+                        vac_yt = sum(r["_raw"]["yt"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+                        vac_ya = sum(r["_raw"]["ya"] for r in preview_rows if "vaccant" in r["_tse"].lower())
+                        vac_yp = (vac_ya / vac_yt * 100) if vac_yt else 0.0
+
+                        # Grand totals
+                        gt_tt = sum(r["_raw"]["tt"] for r in preview_rows)
+                        gt_ta = sum(r["_raw"]["ta"] for r in preview_rows)
+                        gt_tp = (gt_ta / gt_tt * 100) if gt_tt else 0.0
+
+                        gt_mt = sum(r["_raw"]["mt"] for r in preview_rows)
+                        gt_ma = sum(r["_raw"]["ma"] for r in preview_rows)
+                        gt_mp = (gt_ma / gt_mt * 100) if gt_mt else 0.0
+
+                        gt_jt = sum(r["_raw"]["jt"] for r in preview_rows)
+                        gt_ja = sum(r["_raw"]["ja"] for r in preview_rows)
+                        gt_jp = (gt_ja / gt_jt * 100) if gt_jt else 0.0
+
+                        gt_ca = sum(r["_raw"]["ca"] for r in preview_rows)
+
+                        gt_yt = sum(r["_raw"]["yt"] for r in preview_rows)
+                        gt_ya = sum(r["_raw"]["ya"] for r in preview_rows)
+                        gt_yp = (gt_ya / gt_yt * 100) if gt_yt else 0.0
+
+                        display_preview = [
+                            {k: v for k, v in r.items() if not k.startswith("_")} for r in preview_rows
+                        ]
+                        display_preview.append({
+                            "S.No": "",
+                            "Distributor Name": "Total TSE Vaccant",
+                            "TSE Range Buiness": "Vaccant",
+                            "today Target": f"{vac_tt:,.0f}",
+                            "today Ach": f"{vac_ta:,.0f}",
+                            "today %": f"{vac_tp:.0f}%",
+                            "Milker Target": f"{vac_mt:,.0f}",
+                            "Milker Ach": f"{vac_ma:,.0f}",
+                            "Milker %": f"{vac_mp:.0f}%",
+                            "JuicePet Target": f"{vac_jt:,.0f}",
+                            "JuicePet Ach": f"{vac_ja:,.0f}",
+                            "JuicePet %": f"{vac_jp:.0f}%",
+                            "Maza Chaika": f"{vac_ca:,.0f}",
+                            "Yazo Target": f"{vac_yt:,.0f}",
+                            "Yazo Ach": f"{vac_ya:,.0f}",
+                            "Yazo %": f"{vac_yp:.0f}%",
+                        })
+                        display_preview.append({
+                            "S.No": "",
+                            "Distributor Name": "Grand Total  Sajd Hussain ZSM",
+                            "TSE Range Buiness": "Total",
+                            "today Target": f"{gt_tt:,.0f}",
+                            "today Ach": f"{gt_ta:,.0f}",
+                            "today %": f"{gt_tp:.0f}%",
+                            "Milker Target": f"{gt_mt:,.0f}",
+                            "Milker Ach": f"{gt_ma:,.0f}",
+                            "Milker %": f"{gt_mp:.0f}%",
+                            "JuicePet Target": f"{gt_jt:,.0f}",
+                            "JuicePet Ach": f"{gt_ja:,.0f}",
+                            "JuicePet %": f"{gt_jp:.0f}%",
+                            "Maza Chaika": f"{gt_ca:,.0f}",
+                            "Yazo Target": f"{gt_yt:,.0f}",
+                            "Yazo Ach": f"{gt_ya:,.0f}",
+                            "Yazo %": f"{gt_yp:.0f}%",
+                        })
 
                         kpk_tab1, kpk_tab2 = st.tabs(["📊 Target vs Achievement Preview", "📋 Summary Log Preview"])
                         with kpk_tab1:
-                            st.dataframe(pd.DataFrame(preview_rows), use_container_width=True, hide_index=True)
+                            st.dataframe(pd.DataFrame(display_preview), use_container_width=True, hide_index=True)
                         with kpk_tab2:
                             st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
@@ -691,26 +762,23 @@ with tab_achievement_kpk:
         st.markdown(
             """
             **KPK Monthly Targets Setup:**
-            Yahan se aap KPK ke tamam distributors ke liye monthly targets set aur update kar sakte hain.
+            Yahan se aap KPK ke tamam distributors ke liye Brand-wise monthly targets set aur update kar sakte hain.
             Table direct edit karein aur **💾 Save KPK Target Changes** par click karein.
             """
         )
 
         _, _, kpk_current_targets = load_kpk_reference_data()
 
-        tot_kpk_today_tray = sum(t.get("today_target_tray", 0) for t in kpk_current_targets)
-        tot_kpk_today_lit = sum(t.get("today_target_liters", 0.0) for t in kpk_current_targets)
-        tot_kpk_yazoo = sum(t.get("yazoo_target", 0) for t in kpk_current_targets)
+        tot_kpk_today = sum(t.get("today_target", t.get("today_target_tray", 0)) for t in kpk_current_targets)
         tot_kpk_milker = sum(t.get("milker_target", 0) for t in kpk_current_targets)
-        tot_kpk_maaza = sum(t.get("maaza_target", 0) for t in kpk_current_targets)
         tot_kpk_jpb = sum(t.get("jpb_target", 0) for t in kpk_current_targets)
+        tot_kpk_yazo = sum(t.get("yazoo_target", 0) for t in kpk_current_targets)
 
-        km1, km2, km3, km4, km5 = st.columns(5)
-        km1.metric("today TW Trays", f"{tot_kpk_today_tray:,.0f}", f"{tot_kpk_today_lit:,.0f} L")
-        km2.metric("Yazoo-FM Trays", f"{tot_kpk_yazoo:,.0f}")
-        km3.metric("Milker-FM Trays", f"{tot_kpk_milker:,.0f}")
-        km4.metric("Maaza Trays", f"{tot_kpk_maaza:,.0f}")
-        km5.metric("Juices Pet Trays", f"{tot_kpk_jpb:,.0f}")
+        km1, km2, km3, km4 = st.columns(4)
+        km1.metric("today Target Trays", f"{tot_kpk_today:,.0f}")
+        km2.metric("Milker-FM Target Trays", f"{tot_kpk_milker:,.0f}")
+        km3.metric("JuicePet Bottle Target Trays", f"{tot_kpk_jpb:,.0f}")
+        km4.metric("Yazo Target Trays", f"{tot_kpk_yazo:,.0f}")
 
         st.write("")
 
@@ -719,24 +787,20 @@ with tab_achievement_kpk:
         kpk_col_config = {
             "sno": st.column_config.NumberColumn("S.No", disabled=True, width="small"),
             "distributor": st.column_config.TextColumn("Distributor Name", disabled=True, width="large"),
-            "today_112": st.column_config.NumberColumn("today 112ml", min_value=0, step=10),
-            "today_180": st.column_config.NumberColumn("today 180ml", min_value=0, step=10),
-            "today_225": st.column_config.NumberColumn("today 225ml", min_value=0, step=10),
-            "yazoo_112": st.column_config.NumberColumn("Yazoo 112ml", min_value=0, step=10),
-            "milker_180": st.column_config.NumberColumn("Milker 180ml", min_value=0, step=500),
-            "milker_225": st.column_config.NumberColumn("Milker 225ml", min_value=0, step=500),
-            "maaza_target": st.column_config.NumberColumn("Maaza Target", min_value=0, step=50),
-            "jpb_250": st.column_config.NumberColumn("Juice 250ml", min_value=0, step=50),
-            "jpb_500": st.column_config.NumberColumn("Juice 500ml", min_value=0, step=50),
-            "jpb_1000": st.column_config.NumberColumn("Juice 1000ml", min_value=0, step=50),
-            "jpb_1500": st.column_config.NumberColumn("Juice 1500ml", min_value=0, step=50),
-            "jpb_2000": st.column_config.NumberColumn("Juice 2000ml", min_value=0, step=50),
+            "tse": st.column_config.TextColumn("TSE Range Buiness", width="medium"),
+            "today_target": st.column_config.NumberColumn("today Target In Tray", min_value=0, step=25),
+            "milker_target": st.column_config.NumberColumn("Milker-FM Target In Tray", min_value=0, step=500),
+            "jpb_target": st.column_config.NumberColumn("JuicePet Target In Tray", min_value=0, step=50),
+            "yazoo_target": st.column_config.NumberColumn("Yazo Target In Tray", min_value=0, step=25),
         }
         kpk_visible_cols = [
-            "sno", "distributor", "today_112", "today_180", "today_225",
-            "yazoo_112", "milker_180", "milker_225", "maaza_target",
-            "jpb_250", "jpb_500", "jpb_1000", "jpb_1500", "jpb_2000"
+            "sno", "distributor", "tse", "today_target", "milker_target", "jpb_target", "yazoo_target"
         ]
+
+        # Ensure all columns exist in df
+        for col in kpk_visible_cols:
+            if col not in kpk_target_df.columns:
+                kpk_target_df[col] = 0
 
         kpk_edited_df = st.data_editor(
             kpk_target_df[kpk_visible_cols],
@@ -747,42 +811,26 @@ with tab_achievement_kpk:
             key="kpk_targets_data_editor"
         )
 
-        kpk_btn_c1, kpk_btn_c2 = st.columns([3, 1])
+        kpk_btn_c1, kpk_btn_c2, kpk_btn_c3 = st.columns([2, 1, 1])
         if kpk_btn_c1.button("💾 Save KPK Target Changes", key="save_kpk_targets_btn"):
             kpk_map = {row["distributor"]: row for row in kpk_current_targets}
             for _, edited_row in kpk_edited_df.iterrows():
                 d_name = edited_row["distributor"]
                 if d_name in kpk_map:
                     t_entry = kpk_map[d_name]
-                    t_entry["today_112"] = float(edited_row["today_112"] or 0)
-                    t_entry["today_180"] = float(edited_row["today_180"] or 0)
-                    t_entry["today_225"] = float(edited_row["today_225"] or 0)
-                    t_entry["today_target_tray"] = t_entry["today_112"] + t_entry["today_180"] + t_entry["today_225"]
-                    t_entry["today_target_liters"] = round(
-                        t_entry["today_112"] * 2.688 + t_entry["today_180"] * 4.32 + t_entry["today_225"] * 6.075, 2
-                    )
-                    t_entry["yazoo_112"] = float(edited_row["yazoo_112"] or 0)
-                    t_entry["yazoo_target"] = t_entry["yazoo_112"]
-                    t_entry["milker_180"] = float(edited_row["milker_180"] or 0)
-                    t_entry["milker_225"] = float(edited_row["milker_225"] or 0)
-                    t_entry["milker_target"] = t_entry["milker_180"] + t_entry["milker_225"]
-                    t_entry["maaza_target"] = float(edited_row["maaza_target"] or 0)
-                    t_entry["jpb_250"] = float(edited_row["jpb_250"] or 0)
-                    t_entry["jpb_500"] = float(edited_row["jpb_500"] or 0)
-                    t_entry["jpb_1000"] = float(edited_row["jpb_1000"] or 0)
-                    t_entry["jpb_1500"] = float(edited_row["jpb_1500"] or 0)
-                    t_entry["jpb_2000"] = float(edited_row["jpb_2000"] or 0)
-                    t_entry["jpb_target"] = (
-                        t_entry["jpb_250"] + t_entry["jpb_500"] + t_entry["jpb_1000"] +
-                        t_entry["jpb_1500"] + t_entry["jpb_2000"]
-                    )
+                    t_entry["tse"] = str(edited_row["tse"] or "Vaccant")
+                    t_entry["today_target"] = float(edited_row["today_target"] or 0)
+                    t_entry["milker_target"] = float(edited_row["milker_target"] or 0)
+                    t_entry["jpb_target"] = float(edited_row["jpb_target"] or 0)
+                    t_entry["yazoo_target"] = float(edited_row["yazoo_target"] or 0)
 
             updated_kpk_list = list(kpk_map.values())
             save_kpk_targets(updated_kpk_list)
             st.success("KPK Target values kamiyabi se save ho gaye!")
             st.rerun()
 
-        if kpk_btn_c2.button("↺ Reset KPK to October Defaults", key="reset_kpk_oct_defaults"):
+        KPK_SEPT_PATH = os.path.join(KPK_DATA_DIR, "targets_september_template.json")
+        if kpk_btn_c2.button("↺ Reset to October Defaults", key="reset_kpk_oct_defaults"):
             if os.path.exists(KPK_DEFAULT_OCT_PATH):
                 with open(KPK_DEFAULT_OCT_PATH, encoding="utf-8") as f_def:
                     default_kpk_targets = json.load(f_def)
@@ -791,6 +839,16 @@ with tab_achievement_kpk:
                 st.rerun()
             else:
                 st.warning("KPK default targets backup file nahi mili.")
+
+        if kpk_btn_c3.button("↺ Reset to September Template", key="reset_kpk_sept_template"):
+            if os.path.exists(KPK_SEPT_PATH):
+                with open(KPK_SEPT_PATH, encoding="utf-8") as f_def:
+                    sept_kpk_targets = json.load(f_def)
+                save_kpk_targets(sept_kpk_targets)
+                st.success("September template restore ho gaya!")
+                st.rerun()
+            else:
+                st.warning("September template file nahi mili.")
 
 
 # =====================================================================

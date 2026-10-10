@@ -2,19 +2,22 @@
 KPK Target vs Achievement Report Generator
 --------------------------------------------
 Builds the exact KPK Target vs Achievement workbook matching the office's
-master Excel sheet:
+master Excel sheet (TSE Wise today, Milker & Juice Pet Bottle):
 
   1. Summary                   -- Cumulative raw dispatch log for KPK.
-  2. KPK Target vs Achievement -- ALL brands on ONE single sheet:
-                                  today TW / Maza Chaika, Yazoo-FM, Milker-FM,
-                                  Maaza, and Maza/Polly Juices Pet Bottle,
-                                  complete with target trays, liter conversions,
-                                  achievements, live Excel SUM formulas, and
-                                  percentage formulas.
+  2. KPK Target vs Achievement -- EXACT visual replica of the KPK master sheet:
+                                  16 columns total:
+                                  S.No | Distributor Name | TSE Range Buiness |
+                                  today [Target In Tray, Ach In Tray, Ach % Tray] |
+                                  Milker-FM [Target In Tray, Ach In Tray, Ach %] |
+                                  JuicePet Bottle [Target In Tray, Ach In Tray, Ach %] |
+                                  Maza Chaika [In tray] |
+                                  Yazo [Targ In tray, Ach In tray, Ach %]
+                                  plus Total TSE Vaccant and Grand Total Sajd Hussain ZSM.
   3. Category                  -- Master product catalog with SKU Name, Category, and Size.
 
 Reference & Config files under kpk_data/:
-  - kpk_data/targets.json      -- KPK 9 distributors targets for each brand/size.
+  - kpk_data/targets.json      -- KPK distributors with targets for each brand.
   - kpk_data/partname.json     -- KPK distributor name normalization lookup.
   - ach_data/catgery.json      -- Shared master catalog for SKU categorization.
 """
@@ -36,11 +39,10 @@ KPK_DATA_DIR = os.path.join(BASE_DIR, "kpk_data")
 # Excel Styling
 FONT_NAME = "Calibri"
 BLUE_TITLE_FILL = PatternFill("solid", fgColor="00B0F0")
-HDR_PEACH_FILL = PatternFill("solid", fgColor="F4B183")
-DATA_ROW_FILL = PatternFill("solid", fgColor="FCE4D6")
-TOTAL_YELLOW_FILL = PatternFill("solid", fgColor="FFFF00")
-GRAND_TOTAL_FILL = PatternFill("solid", fgColor="FFC000")
+HDR_PEACH_FILL = PatternFill("solid", fgColor="F8CBAD")
 SUMMARY_HDR_FILL = PatternFill("solid", fgColor="1F4E79")
+YELLOW_FILL = PatternFill("solid", fgColor="FFFF00")
+PINK_FILL = PatternFill("solid", fgColor="FCE4D6")
 
 THIN_SIDE = Side(style="thin", color="BFBFBF")
 BOX_BORDER = Border(left=THIN_SIDE, right=THIN_SIDE, top=THIN_SIDE, bottom=THIN_SIDE)
@@ -78,40 +80,42 @@ def normalize_party(raw_party, party_lookup):
     low = p.lower()
     if low in party_lookup:
         return party_lookup[low]
-    
-    # Fuzzy matching for KPK 9 distributors
+
+    # Fuzzy matching for KPK distributors
     if "barkatullah" in low:
-        return "Haji Barkatullah & Co. - Peshawar (Mega Distributor)"
-    if "hasnain" in low and "kohat" in low:
-        return "Hasnain Traders -Kohat (Mega Distributor)"
+        return "Haji Barkatullah & Co. Peshawar (Mega Distributor) Dairy"
     if "badshah" in low or "mardan" in low:
-        return "Badshah Traders -Mardan (Mega Distributor)"
+        return "Badshah Traders-Mardan (Mega Distributor) Dairy"
     if "haris" in low:
-        return "Haris Traders & Commision Agent -Karak (Mega Distributor)"
+        return "Haris Traders & Commission Agent-Karak (Mega Distributor) Dairy"
     if "mingora" in low or "swat" in low or "tariq" in low:
-        return "Tariq Traders - Mingora Swat (Mega Distributor)"
-    if "hafiz" in low or "d.i" in low or "di khan" in low:
-        return "Hafiz Traders - D.I Khan (Mega Distributor)"
+        return "Tariq Traders-Mingora Swat (Mega Distributor) Dairy"
+    if "nowroz" in low or "hasnain" in low:
+        return "Nowroz & Sons-Kohat ( Mega Distributor) Dairy"
     if "ahmad" in low and "kohat" in low:
-        return "Ahmad Traders -Kohat (Mega Distributor)"
+        return "Ahmad Traders-Kohat (Mega Distributor) Dairy"
     if "ahmad" in low and "peshawar" in low:
-        return "Ahmad Traders -Peshawar (Mega Distributor)"
+        return "Ahmad Traders-Peshawar (Mega Distributor) Dairy"
+    if "hafiz" in low or "d.i" in low or "di khan" in low:
+        return "Hafiz Traders-D.I Khan (MEGA Distributor) Dairy"
     if "mohaimin" in low:
-        return "Abdul Mohaimin Traders -Karak (Mega Distributor)"
+        return "Abdul Mohaimin Traders-Karak (Mega Distributor) Dairy"
+    if "vaccent" in low or "vaccant" in low:
+        return "Vaccent"
 
     return p
 
 
 def extract_date_range_label(raw_text):
-    """Extract 'Month of  01 TO D-MON -YYYY' from dispatch header."""
+    """Extract 'MONTH OF 1 TO {day} {MON}-{YEAR}' from dispatch header."""
     m = re.search(r"Date:\s*(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})", raw_text)
     if m:
         try:
             d2 = datetime.strptime(m.group(2), "%Y-%m-%d")
-            return f"Month of  01 TO {d2.day}-{d2.strftime('%b').upper()} -{d2.year}"
+            return f"MONTH OF 1 TO {d2.day} {d2.strftime('%b').upper()}-{d2.year}"
         except Exception:
             pass
-    return "Month of  01 TO " + datetime.today().strftime("%d-%b-%Y").upper()
+    return "MONTH OF 1 TO " + datetime.today().strftime("%d %b-%Y").upper()
 
 
 def flatten_dispatch_groups(groups):
@@ -183,20 +187,54 @@ def add_day_to_log(log_path, raw_text):
 
 
 def aggregate_achievements(rows, sku_lookup, party_lookup):
-    """Aggregate total trays shipped per normalized distributor and (category, size)."""
+    """
+    Aggregate total trays shipped per normalized distributor into the 5 KPK categories:
+      - 'today'
+      - 'Milker-FM'
+      - 'JuicePet Bottle'
+      - 'Maza Chaika'
+      - 'Yazo'
+    """
     dist_ach = {}
     unmatched_skus = set()
     for r in rows:
         norm_dist = normalize_party(r["party"], party_lookup)
         sku_clean = r["sku"].strip().upper()
-        mapping = sku_lookup.get(sku_clean)
-        if not mapping:
-            unmatched_skus.add(r["sku"])
-            continue
-        cat, sz = mapping
+
+        if "CHAIKA" in sku_clean or "CHAYKA" in sku_clean:
+            brand = "Maza Chaika"
+        else:
+            mapping = sku_lookup.get(sku_clean)
+            if mapping:
+                cat, _ = mapping
+                cat_lower = cat.lower().strip()
+                if "today" in cat_lower:
+                    brand = "today"
+                elif "milker" in cat_lower:
+                    brand = "Milker-FM"
+                elif "yazoo" in cat_lower or "yazo" in cat_lower:
+                    brand = "Yazo"
+                elif "juice" in cat_lower or "maza" in cat_lower or "polly" in cat_lower:
+                    brand = "JuicePet Bottle"
+                else:
+                    brand = cat
+            else:
+                s_low = sku_clean.lower()
+                if "today" in s_low:
+                    brand = "today"
+                elif "milker" in s_low:
+                    brand = "Milker-FM"
+                elif "yazoo" in s_low or "yazo" in s_low:
+                    brand = "Yazo"
+                elif "juice" in s_low or "maza" in s_low or "polly" in s_low or "bottle" in s_low:
+                    brand = "JuicePet Bottle"
+                else:
+                    unmatched_skus.add(r["sku"])
+                    brand = "Other"
+
         if norm_dist not in dist_ach:
             dist_ach[norm_dist] = {}
-        dist_ach[norm_dist][(cat, sz)] = dist_ach[norm_dist].get((cat, sz), 0.0) + float(r["qty"])
+        dist_ach[norm_dist][brand] = dist_ach[norm_dist].get(brand, 0.0) + float(r.get("qty", 0))
 
     return dist_ach, unmatched_skus
 
@@ -239,262 +277,286 @@ def build_summary_sheet(wb, rows):
 
 def build_kpk_sheet(wb, month_label, targets, dist_ach):
     """
-    Build Sheet 2: ALL brands side-by-side in ONE SINGLE SHEET:
-    today TW / Maza Chaika, Yazoo-FM, Milker-FM, Maaza, and Juices Pet Bottle.
+    Build Sheet 2: EXACT match of KPK Target vs Achievement sheet (16 columns).
     """
     ws = wb.create_sheet("KPK Target vs Achievement")
 
     # Row 1: Title
-    ws.merge_cells("B1:AM1")
-    t = ws.cell(row=1, column=2, value="KPK TARGET VS ACHIEVEMENT - Oct-26")
-    t.font = Font(name=FONT_NAME, size=16, bold=True)
+    ws.merge_cells("A1:P1")
+    t = ws.cell(row=1, column=1, value="KPK TARGET VS ACHIEVEMENT  TSE  WISE today, Milker & Juice Pet Bottle")
+    t.font = Font(name=FONT_NAME, size=14, bold=True, color="000000")
     t.fill = BLUE_TITLE_FILL
     t.alignment = Alignment(horizontal="center", vertical="center")
-    ws.row_dimensions[1].height = 30
+    ws.row_dimensions[1].height = 28
 
     # Row 2: Subtitle
-    ws.merge_cells("B2:AM2")
-    m = ws.cell(row=2, column=2, value=month_label)
-    m.font = Font(name=FONT_NAME, size=12, bold=True)
+    ws.merge_cells("A2:P2")
+    m = ws.cell(row=2, column=1, value=month_label)
+    m.font = Font(name=FONT_NAME, size=12, bold=True, color="000000")
     m.fill = BLUE_TITLE_FILL
     m.alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[2].height = 22
 
     # Row 3 & 4: Top headers
-    for c_idx, h_text in [(2, "S.No"), (3, "Distributor Name"), (4, "Region")]:
-        ws.merge_cells(start_row=3, start_column=c_idx, end_row=4, end_column=c_idx)
-        cell = ws.cell(row=3, column=c_idx, value=h_text)
-        cell.font = Font(name=FONT_NAME, size=10, bold=True)
-        cell.fill = HDR_PEACH_FILL
-        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws.merge_cells("A3:A4")
+    c_sno = ws.cell(row=3, column=1, value="S.No")
+    c_sno.fill = HDR_PEACH_FILL
+    c_sno.font = Font(name=FONT_NAME, size=10, bold=True)
+    c_sno.alignment = Alignment(horizontal="center", vertical="center")
 
-    # Group 1: today TW/Maza Chaika: Col E to M (5 to 13)
-    ws.merge_cells("E3:M3")
-    c_today = ws.cell(row=3, column=5, value="today TW/Maza Chaika  (Target & Ach)")
-    c_today.font = Font(name=FONT_NAME, size=11, bold=True)
-    c_today.fill = HDR_PEACH_FILL
+    ws.merge_cells("B3:B4")
+    c_dist = ws.cell(row=3, column=2, value="Distributor Name")
+    c_dist.fill = HDR_PEACH_FILL
+    c_dist.font = Font(name=FONT_NAME, size=10, bold=True)
+    c_dist.alignment = Alignment(horizontal="center", vertical="center")
+
+    ws.merge_cells("C3:C4")
+    c_tse = ws.cell(row=3, column=3, value="TSE Range Buiness")
+    c_tse.fill = HDR_PEACH_FILL
+    c_tse.font = Font(name=FONT_NAME, size=10, bold=True)
+    c_tse.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Group 1: today: Col D to F (4 to 6)
+    ws.merge_cells("D3:F3")
+    c_today = ws.cell(row=3, column=4, value="today")
+    c_today.fill = PatternFill("solid", fgColor="0070C0")
+    c_today.font = Font(name=FONT_NAME, size=11, bold=True, color="FFFFFF")
     c_today.alignment = Alignment(horizontal="center", vertical="center")
 
-    # Group 2: Yazoo -FM: Col N to S (14 to 19)
-    ws.merge_cells("N3:S3")
-    c_y = ws.cell(row=3, column=14, value="Yazoo -FM")
-    c_y.font = Font(name=FONT_NAME, size=11, bold=True)
-    c_y.fill = HDR_PEACH_FILL
-    c_y.alignment = Alignment(horizontal="center", vertical="center")
+    for col_idx, sub in [(4, "Target In Tray"), (5, "Ach In Tray"), (6, "Ach % Tray")]:
+        c = ws.cell(row=4, column=col_idx, value=sub)
+        c.fill = PatternFill("solid", fgColor="0070C0")
+        c.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-    # Group 3: Milker-FM: Col T to Z (20 to 26)
-    ws.merge_cells("T3:Z3")
-    c_m = ws.cell(row=3, column=20, value="Milker-FM")
-    c_m.font = Font(name=FONT_NAME, size=11, bold=True)
-    c_m.fill = HDR_PEACH_FILL
+    # Group 2: Milker-FM: Col G to I (7 to 9)
+    ws.merge_cells("G3:I3")
+    c_m = ws.cell(row=3, column=7, value="Milker-FM")
+    c_m.fill = PatternFill("solid", fgColor="70AD47")
+    c_m.font = Font(name=FONT_NAME, size=11, bold=True, color="000000")
     c_m.alignment = Alignment(horizontal="center", vertical="center")
 
-    # Group 4: Maaza: Col AA to AE (27 to 31)
-    ws.merge_cells("AA3:AE3")
-    c_mz = ws.cell(row=3, column=27, value="Maaza")
-    c_mz.font = Font(name=FONT_NAME, size=11, bold=True)
-    c_mz.fill = HDR_PEACH_FILL
-    c_mz.alignment = Alignment(horizontal="center", vertical="center")
+    for col_idx, sub in [(7, "Target In Tray"), (8, "Ach In Tray"), (9, "Ach %")]:
+        c = ws.cell(row=4, column=col_idx, value=sub)
+        c.fill = PatternFill("solid", fgColor="70AD47")
+        c.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-    # Group 5: Maza/Polly Juices Pet Bottle: Col AF to AM (32 to 39)
-    ws.merge_cells("AF3:AM3")
-    c_j = ws.cell(row=3, column=32, value="Maza/Polly Juices Pet Bottle")
-    c_j.font = Font(name=FONT_NAME, size=11, bold=True)
-    c_j.fill = HDR_PEACH_FILL
+    # Group 3: JuicePet Bottle: Col J to L (10 to 12)
+    ws.merge_cells("J3:L3")
+    c_j = ws.cell(row=3, column=10, value="JuicePet Bottle")
+    c_j.fill = YELLOW_FILL
+    c_j.font = Font(name=FONT_NAME, size=11, bold=True, color="000000")
     c_j.alignment = Alignment(horizontal="center", vertical="center")
 
-    subheaders = [
-        # today TW
-        (5, "Target  In Tray"),
-        (6, "Target  In Liters"),
-        (7, "112ml"),
-        (8, "180ml"),
-        (9, "225ml"),
-        (10, "Ach In Tray"),
-        (11, "Ach In Liters"),
-        (12, "Ach % Tray"),
-        (13, "Ach % Liters"),
-        # Yazoo -FM
-        (14, "Target in trays"),
-        (15, "112ml"),
-        (16, "180ml"),
-        (17, "225ml"),
-        (18, "Ach In Tray"),
-        (19, "Ach %"),
-        # Milker-FM
-        (20, "Target  In Tray"),
-        (21, "180ml"),
-        (22, "225ml"),
-        (23, "200ml"),
-        (24, "250ml"),
-        (25, "Ach In Tray"),
-        (26, "Ach %"),
-        # Maaza
-        (27, "Target in trays"),
-        (28, "Maaza 330ml"),
-        (29, "Maaza 1000ml"),
-        (30, "Ach In Tray"),
-        (31, "Ach %"),
-        # Maza/Polly Juices Pet Bottle
-        (32, "Target  In Tray"),
-        (33, "250ml"),
-        (34, "500ml"),
-        (35, "1000ml"),
-        (36, "1500ml"),
-        (37, "2000ml"),
-        (38, "Ach In Tray"),
-        (39, "Ach %"),
-    ]
+    for col_idx, sub in [(10, "Target In Tray"), (11, "Ach In Tray"), (12, "Ach %")]:
+        c = ws.cell(row=4, column=col_idx, value=sub)
+        c.fill = YELLOW_FILL
+        c.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-    for c_idx, sub_text in subheaders:
-        cell = ws.cell(row=4, column=c_idx, value=sub_text)
-        cell.font = Font(name=FONT_NAME, size=9, bold=True)
-        cell.fill = HDR_PEACH_FILL
-        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    # Group 4: Maza Chaika: Col M (13)
+    c_ch = ws.cell(row=3, column=13, value="Maza Chaika")
+    c_ch.fill = HDR_PEACH_FILL
+    c_ch.font = Font(name=FONT_NAME, size=11, bold=True, color="000000")
+    c_ch.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-    for r_idx in (3, 4):
-        ws.row_dimensions[r_idx].height = 22 if r_idx == 3 else 30
-        for col_idx in range(2, 40):
-            ws.cell(row=r_idx, column=col_idx).border = BOX_BORDER
-            ws.cell(row=r_idx, column=col_idx).fill = HDR_PEACH_FILL
+    c_ch_sub = ws.cell(row=4, column=13, value="In tray")
+    c_ch_sub.fill = HDR_PEACH_FILL
+    c_ch_sub.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
+    c_ch_sub.alignment = Alignment(horizontal="center", vertical="center")
 
-    # Distributors (all 9)
-    curr_row = 5
-    for item in targets:
-        dist_name = item["distributor"]
+    # Group 5: Yazo: Col N to P (14 to 16)
+    ws.merge_cells("N3:P3")
+    c_y = ws.cell(row=3, column=14, value="Yazo")
+    c_y.fill = PatternFill("solid", fgColor="FF0000")
+    c_y.font = Font(name=FONT_NAME, size=11, bold=True, color="000000")
+    c_y.alignment = Alignment(horizontal="center", vertical="center")
+
+    for col_idx, sub in [(14, "Targ In tray"), (15, "Ach In tray"), (16, "Ach %")]:
+        c = ws.cell(row=4, column=col_idx, value=sub)
+        c.fill = PatternFill("solid", fgColor="FF0000")
+        c.font = Font(name=FONT_NAME, size=9, bold=True, color="000000")
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    # Format header borders
+    for r in (3, 4):
+        ws.row_dimensions[r].height = 24
+        for col in range(1, 17):
+            ws.cell(row=r, column=col).border = BOX_BORDER
+
+    # Data Rows
+    start_r = 5
+    for idx, t in enumerate(targets):
+        r = start_r + idx
+        ws.row_dimensions[r].height = 20
+        dist_name = t["distributor"]
+        tse_name = t.get("tse", "")
         r_ach = dist_ach.get(dist_name, {})
 
-        # today
-        t_112 = r_ach.get(("today", "112ml"), 0.0)
-        t_180 = r_ach.get(("today", "180ml"), 0.0)
-        t_225 = r_ach.get(("today", "225ml"), 0.0)
+        # Col A: S.No
+        ws.cell(row=r, column=1, value=t.get("sno", idx + 1)).alignment = Alignment(horizontal="center", vertical="center")
 
-        # Yazoo
-        y_112 = r_ach.get(("Yazoo-FM", "112ml"), 0.0)
-        y_180 = r_ach.get(("Yazoo-FM", "180ml"), 0.0)
-        y_225 = r_ach.get(("Yazoo-FM", "225ml"), 0.0)
+        # Col B: Distributor Name
+        ws.cell(row=r, column=2, value=dist_name).alignment = Alignment(horizontal="left", vertical="center")
 
-        # Milker
-        m_180 = r_ach.get(("Milker-FM", "180ml"), 0.0)
-        m_225 = r_ach.get(("Milker-FM", "225ml"), 0.0)
-        m_200 = r_ach.get(("Milker-FM", "200ml"), 0.0)
-        m_250 = r_ach.get(("Milker-FM", "250ml"), 0.0)
+        # Col C: TSE Range Buiness
+        c_tse_val = ws.cell(row=r, column=3, value=tse_name)
+        c_tse_val.alignment = Alignment(horizontal="center", vertical="center")
+        if "vaccant" in tse_name.lower():
+            c_tse_val.font = Font(name=FONT_NAME, size=10, bold=True, color="FF0000")
+            c_tse_val.fill = PINK_FILL
+        else:
+            c_tse_val.font = Font(name=FONT_NAME, size=10)
 
-        # Maaza
-        mz_330 = r_ach.get(("Juices Pet Bottle", "Maaza 330ml"), 0.0)
-        mz_1000 = r_ach.get(("Juices Pet Bottle", "Maaza 1000 new"), 0.0)
+        # Col D: today Target
+        tgt_today = t.get("today_target", t.get("today_target_tray", 0))
+        ws.cell(row=r, column=4, value=tgt_today).number_format = "#,##0"
 
-        # Juices Pet Bottle
-        j_250 = r_ach.get(("Juices Pet Bottle", "Maza 250ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 250ml"), 0.0)
-        j_500 = r_ach.get(("Juices Pet Bottle", "Maza 500ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 500ml"), 0.0)
-        j_1000 = r_ach.get(("Juices Pet Bottle", "Maza 1000ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 1000ml"), 0.0)
-        j_1500 = r_ach.get(("Juices Pet Bottle", "Maza 1500ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 1500ml"), 0.0)
-        j_2000 = r_ach.get(("Juices Pet Bottle", "Maza 2000ml"), 0.0) + r_ach.get(("Juices Pet Bottle", "Polly 2000ml"), 0.0)
+        # Col E: today Ach
+        ach_today = r_ach.get("today", 0.0)
+        ws.cell(row=r, column=5, value=ach_today).number_format = "#,##0"
 
-        ws.cell(row=curr_row, column=2, value=item["sno"]).alignment = Alignment(horizontal="center")
-        ws.cell(row=curr_row, column=3, value=dist_name).alignment = Alignment(horizontal="left")
-        ws.cell(row=curr_row, column=4, value=item.get("region", "KPK")).alignment = Alignment(horizontal="center")
+        # Col F: today Ach %
+        ws.cell(row=r, column=6, value=f"=IFERROR(E{r}/D{r}, 0)").number_format = "0%"
 
-        # today columns (5 to 13)
-        ws.cell(row=curr_row, column=5, value=item.get("today_target_tray", 0)).number_format = "#,##0"
-        ws.cell(row=curr_row, column=6, value=item.get("today_target_liters", 0.0)).number_format = "#,##0.00"
-        ws.cell(row=curr_row, column=7, value=t_112).number_format = "#,##0"
-        ws.cell(row=curr_row, column=8, value=t_180).number_format = "#,##0"
-        ws.cell(row=curr_row, column=9, value=t_225).number_format = "#,##0"
-        ws.cell(row=curr_row, column=10, value=f"=SUM(G{curr_row}:I{curr_row})").number_format = "#,##0"
-        ws.cell(row=curr_row, column=11, value=f"=(G{curr_row}*24*0.112)+(H{curr_row}*24*0.18)+(I{curr_row}*27*0.225)").number_format = "#,##0.00"
-        ws.cell(row=curr_row, column=12, value=f"=IFERROR(J{curr_row}/E{curr_row},0)").number_format = "0.0%"
-        ws.cell(row=curr_row, column=13, value=f"=IFERROR(K{curr_row}/F{curr_row},0)").number_format = "0.0%"
+        # Col G: Milker Target
+        tgt_milker = t.get("milker_target", 0)
+        ws.cell(row=r, column=7, value=tgt_milker).number_format = "#,##0"
 
-        # Yazoo columns (14 to 19)
-        ws.cell(row=curr_row, column=14, value=item.get("yazoo_target", 0)).number_format = "#,##0"
-        ws.cell(row=curr_row, column=15, value=y_112).number_format = "#,##0"
-        ws.cell(row=curr_row, column=16, value=y_180).number_format = "#,##0"
-        ws.cell(row=curr_row, column=17, value=y_225).number_format = "#,##0"
-        ws.cell(row=curr_row, column=18, value=f"=SUM(O{curr_row}:Q{curr_row})").number_format = "#,##0"
-        ws.cell(row=curr_row, column=19, value=f"=IFERROR(R{curr_row}/N{curr_row},0)").number_format = "0.0%"
+        # Col H: Milker Ach
+        ach_milker = r_ach.get("Milker-FM", 0.0)
+        ws.cell(row=r, column=8, value=ach_milker).number_format = "#,##0"
 
-        # Milker columns (20 to 26)
-        ws.cell(row=curr_row, column=20, value=item.get("milker_target", 0)).number_format = "#,##0"
-        ws.cell(row=curr_row, column=21, value=m_180).number_format = "#,##0"
-        ws.cell(row=curr_row, column=22, value=m_225).number_format = "#,##0"
-        ws.cell(row=curr_row, column=23, value=m_200).number_format = "#,##0"
-        ws.cell(row=curr_row, column=24, value=m_250).number_format = "#,##0"
-        ws.cell(row=curr_row, column=25, value=f"=SUM(U{curr_row}:X{curr_row})").number_format = "#,##0"
-        ws.cell(row=curr_row, column=26, value=f"=IFERROR(Y{curr_row}/T{curr_row},0)").number_format = "0.0%"
+        # Col I: Milker Ach %
+        ws.cell(row=r, column=9, value=f"=IFERROR(H{r}/G{r}, 0)").number_format = "0%"
 
-        # Maaza columns (27 to 31)
-        ws.cell(row=curr_row, column=27, value=item.get("maaza_target", 0)).number_format = "#,##0"
-        ws.cell(row=curr_row, column=28, value=mz_330).number_format = "#,##0"
-        ws.cell(row=curr_row, column=29, value=mz_1000).number_format = "#,##0"
-        ws.cell(row=curr_row, column=30, value=f"=SUM(AB{curr_row}:AC{curr_row})").number_format = "#,##0"
-        ws.cell(row=curr_row, column=31, value=f"=IFERROR(AD{curr_row}/AA{curr_row},0)").number_format = "0.0%"
+        # Col J: JuicePet Target
+        tgt_jpb = t.get("jpb_target", 0)
+        ws.cell(row=r, column=10, value=tgt_jpb).number_format = "#,##0"
 
-        # Maza/Polly Juices columns (32 to 39)
-        ws.cell(row=curr_row, column=32, value=item.get("jpb_target", 0)).number_format = "#,##0"
-        ws.cell(row=curr_row, column=33, value=j_250).number_format = "#,##0"
-        ws.cell(row=curr_row, column=34, value=j_500).number_format = "#,##0"
-        ws.cell(row=curr_row, column=35, value=j_1000).number_format = "#,##0"
-        ws.cell(row=curr_row, column=36, value=j_1500).number_format = "#,##0"
-        ws.cell(row=curr_row, column=37, value=j_2000).number_format = "#,##0"
-        ws.cell(row=curr_row, column=38, value=f"=SUM(AG{curr_row}:AK{curr_row})").number_format = "#,##0"
-        ws.cell(row=curr_row, column=39, value=f"=IFERROR(AL{curr_row}/AF{curr_row},0)").number_format = "0.0%"
+        # Col K: JuicePet Ach
+        ach_jpb = r_ach.get("JuicePet Bottle", 0.0)
+        ws.cell(row=r, column=11, value=ach_jpb).number_format = "#,##0"
 
-        for col_idx in range(2, 40):
-            c_node = ws.cell(row=curr_row, column=col_idx)
-            c_node.font = Font(name=FONT_NAME, size=10)
-            c_node.border = BOX_BORDER
-            c_node.fill = DATA_ROW_FILL
-            if col_idx in (2, 4):
-                c_node.alignment = Alignment(horizontal="center", vertical="center")
-            elif col_idx == 3:
-                c_node.alignment = Alignment(horizontal="left", vertical="center")
-            else:
-                c_node.alignment = Alignment(horizontal="right", vertical="center")
+        # Col L: JuicePet Ach %
+        ws.cell(row=r, column=12, value=f"=IFERROR(K{r}/J{r}, 0)").number_format = "0%"
 
-        ws.row_dimensions[curr_row].height = 18
-        curr_row += 1
+        # Col M: Maza Chaika
+        ach_chaika = r_ach.get("Maza Chaika", 0.0)
+        ws.cell(row=r, column=13, value=ach_chaika).number_format = "#,##0"
 
-    # Grand Total Row (Row 14)
-    gt_row = curr_row
-    ws.merge_cells(start_row=gt_row, start_column=2, end_row=gt_row, end_column=4)
-    gt_lbl = ws.cell(row=gt_row, column=2, value="Grand Total KPK (Sajid Hussain ZSM)")
-    gt_lbl.font = Font(name=FONT_NAME, size=11, bold=True)
-    gt_lbl.alignment = Alignment(horizontal="center", vertical="center")
+        # Col N: Yazo Target
+        tgt_yazo = t.get("yazoo_target", 0)
+        ws.cell(row=r, column=14, value=tgt_yazo).number_format = "#,##0"
 
-    # Sum columns for 5 to 13
-    sum_cols = [5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 38]
-    for col_idx in sum_cols:
-        cl = get_column_letter(col_idx)
-        ws.cell(row=gt_row, column=col_idx, value=f"=SUM({cl}5:{cl}{gt_row-1})").number_format = "#,##0" if col_idx not in (6, 11) else "#,##0.00"
+        # Col O: Yazo Ach
+        ach_yazo = r_ach.get("Yazo", 0.0)
+        ws.cell(row=r, column=15, value=ach_yazo).number_format = "#,##0"
 
-    # Percentage formulas for totals
-    ws.cell(row=gt_row, column=12, value=f"=IFERROR(J{gt_row}/E{gt_row},0)").number_format = "0.0%"
-    ws.cell(row=gt_row, column=13, value=f"=IFERROR(K{gt_row}/F{gt_row},0)").number_format = "0.0%"
-    ws.cell(row=gt_row, column=19, value=f"=IFERROR(R{gt_row}/N{gt_row},0)").number_format = "0.0%"
-    ws.cell(row=gt_row, column=26, value=f"=IFERROR(Y{gt_row}/T{gt_row},0)").number_format = "0.0%"
-    ws.cell(row=gt_row, column=31, value=f"=IFERROR(AD{gt_row}/AA{gt_row},0)").number_format = "0.0%"
-    ws.cell(row=gt_row, column=39, value=f"=IFERROR(AL{gt_row}/AF{gt_row},0)").number_format = "0.0%"
+        # Col P: Yazo Ach %
+        ws.cell(row=r, column=16, value=f"=IFERROR(O{r}/N{r}, 0)").number_format = "0%"
 
-    for col_idx in range(2, 40):
-        c_gt = ws.cell(row=gt_row, column=col_idx)
-        c_gt.font = Font(name=FONT_NAME, size=11, bold=True)
-        c_gt.fill = GRAND_TOTAL_FILL
-        c_gt.border = BOX_BORDER
-        if col_idx not in (2, 3, 4):
-            c_gt.alignment = Alignment(horizontal="right", vertical="center")
+        for c_idx in range(1, 17):
+            cell = ws.cell(row=r, column=c_idx)
+            cell.border = BOX_BORDER
+            if c_idx not in (2, 3):
+                cell.font = Font(name=FONT_NAME, size=10)
+                cell.alignment = Alignment(horizontal="center", vertical="center")
 
-    ws.row_dimensions[gt_row].height = 22
+    end_r = start_r + len(targets) - 1
 
-    # Column widths
-    ws.column_dimensions["A"].width = 3
-    ws.column_dimensions["B"].width = 6
-    ws.column_dimensions["C"].width = 46
-    ws.column_dimensions["D"].width = 12
-    for c_idx in range(5, 40):
-        ws.column_dimensions[get_column_letter(c_idx)].width = 11
+    # Row: Total TSE Vaccant
+    r_vac = end_r + 1
+    ws.row_dimensions[r_vac].height = 22
+    ws.merge_cells(f"A{r_vac}:C{r_vac}")
+    lbl_vac = ws.cell(row=r_vac, column=1, value="Total TSE Vaccant")
+    lbl_vac.font = Font(name=FONT_NAME, size=11, bold=True)
+    lbl_vac.alignment = Alignment(horizontal="center", vertical="center")
 
-    ws.freeze_panes = "E5"
+    ws.cell(row=r_vac, column=4, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", D5:D{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=5, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", E5:E{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=6, value=f'=IFERROR(E{r_vac}/D{r_vac}, 0)').number_format = "0%"
+
+    ws.cell(row=r_vac, column=7, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", G5:G{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=8, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", H5:H{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=9, value=f'=IFERROR(H{r_vac}/G{r_vac}, 0)').number_format = "0%"
+
+    ws.cell(row=r_vac, column=10, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", J5:J{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=11, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", K5:K{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=12, value=f'=IFERROR(K{r_vac}/J{r_vac}, 0)').number_format = "0%"
+
+    ws.cell(row=r_vac, column=13, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", M5:M{end_r})').number_format = "#,##0"
+
+    ws.cell(row=r_vac, column=14, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", N5:N{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=15, value=f'=SUMIF($C$5:$C${end_r}, "*Vaccant*", O5:O{end_r})').number_format = "#,##0"
+    ws.cell(row=r_vac, column=16, value=f'=IFERROR(O{r_vac}/N{r_vac}, 0)').number_format = "0%"
+
+    for c_idx in range(1, 17):
+        cell = ws.cell(row=r_vac, column=c_idx)
+        cell.fill = YELLOW_FILL
+        cell.font = Font(name=FONT_NAME, size=11, bold=True)
+        cell.border = BOX_BORDER
+        if c_idx > 3:
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Row: Grand Total Sajd Hussain ZSM
+    r_gt = r_vac + 1
+    ws.row_dimensions[r_gt].height = 24
+    ws.merge_cells(f"A{r_gt}:C{r_gt}")
+    lbl_gt = ws.cell(row=r_gt, column=1, value="Grand Total  Sajd Hussain ZSM")
+    lbl_gt.font = Font(name=FONT_NAME, size=11, bold=True)
+    lbl_gt.alignment = Alignment(horizontal="center", vertical="center")
+
+    ws.cell(row=r_gt, column=4, value=f'=SUM(D5:D{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=5, value=f'=SUM(E5:E{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=6, value=f'=IFERROR(E{r_gt}/D{r_gt}, 0)').number_format = "0%"
+
+    ws.cell(row=r_gt, column=7, value=f'=SUM(G5:G{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=8, value=f'=SUM(H5:H{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=9, value=f'=IFERROR(H{r_gt}/G{r_gt}, 0)').number_format = "0%"
+
+    ws.cell(row=r_gt, column=10, value=f'=SUM(J5:J{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=11, value=f'=SUM(K5:K{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=12, value=f'=IFERROR(K{r_gt}/J{r_gt}, 0)').number_format = "0%"
+
+    ws.cell(row=r_gt, column=13, value=f'=SUM(M5:M{end_r})').number_format = "#,##0"
+
+    ws.cell(row=r_gt, column=14, value=f'=SUM(N5:N{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=15, value=f'=SUM(O5:O{end_r})').number_format = "#,##0"
+    ws.cell(row=r_gt, column=16, value=f'=IFERROR(O{r_gt}/N{r_gt}, 0)').number_format = "0%"
+
+    for c_idx in range(1, 17):
+        cell = ws.cell(row=r_gt, column=c_idx)
+        cell.fill = YELLOW_FILL
+        cell.font = Font(name=FONT_NAME, size=11, bold=True)
+        cell.border = BOX_BORDER
+        if c_idx > 3:
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Column Widths
+    col_widths = {
+        "A": 6,   # S.No
+        "B": 44,  # Distributor Name
+        "C": 18,  # TSE Range Buiness
+        "D": 13,  # today Target
+        "E": 12,  # today Ach
+        "F": 12,  # today Ach %
+        "G": 13,  # Milker Target
+        "H": 13,  # Milker Ach
+        "I": 11,  # Milker Ach %
+        "J": 13,  # JuicePet Target
+        "K": 13,  # JuicePet Ach
+        "L": 11,  # JuicePet Ach %
+        "M": 12,  # Maza Chaika
+        "N": 12,  # Yazo Target
+        "O": 12,  # Yazo Ach
+        "P": 11,  # Yazo Ach %
+    }
+    for col_l, w in col_widths.items():
+        ws.column_dimensions[col_l].width = w
+
+    ws.freeze_panes = "D5"
     ws.sheet_view.showGridLines = True
     return ws
 
@@ -530,7 +592,7 @@ def build_category_sheet(wb):
 
 
 def build_workbook(cumulative_rows, month_label, out_path):
-    """Generate the single-sheet KPK Target vs Achievement Excel workbook."""
+    """Generate the exact 16-column KPK Target vs Achievement Excel workbook."""
     sku_lookup, party_lookup, targets = load_reference_data()
     dist_ach, unmatched_skus = aggregate_achievements(cumulative_rows, sku_lookup, party_lookup)
 

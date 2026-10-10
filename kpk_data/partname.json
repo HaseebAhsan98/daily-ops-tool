@@ -1,102 +1,102 @@
 [
   {
-    "raw": "Haji Barkatullah & Co. - Peshawar (Mega Distributor)",
-    "normalized": "Haji Barkatullah & Co. - Peshawar (Mega Distributor)"
-  },
-  {
-    "raw": "Hasnain Traders -Kohat (Mega Distributor)",
-    "normalized": "Hasnain Traders -Kohat (Mega Distributor)"
-  },
-  {
-    "raw": "Badshah Traders -Mardan (Mega Distributor)",
-    "normalized": "Badshah Traders -Mardan (Mega Distributor)"
-  },
-  {
-    "raw": "Haris Traders & Commision Agent -Karak (Mega Distributor)",
-    "normalized": "Haris Traders & Commision Agent -Karak (Mega Distributor)"
-  },
-  {
-    "raw": "Tariq Traders - Mingora Swat (Mega Distributor)",
-    "normalized": "Tariq Traders - Mingora Swat (Mega Distributor)"
-  },
-  {
-    "raw": "Hafiz Traders - D.I Khan (Mega Distributor)",
-    "normalized": "Hafiz Traders - D.I Khan (Mega Distributor)"
-  },
-  {
-    "raw": "Ahmad Traders -Kohat (Mega Distributor)",
-    "normalized": "Ahmad Traders -Kohat (Mega Distributor)"
-  },
-  {
-    "raw": "Ahmad Traders -Peshawar (Mega Distributor)",
-    "normalized": "Ahmad Traders -Peshawar (Mega Distributor)"
-  },
-  {
-    "raw": "Abdul Mohaimin Traders -Karak (Mega Distributor)",
-    "normalized": "Abdul Mohaimin Traders -Karak (Mega Distributor)"
-  },
-  {
     "raw": "Haji Barkatullah & Co. Peshawar (Mega Distributor) Dairy",
-    "normalized": "Haji Barkatullah & Co. - Peshawar (Mega Distributor)"
+    "normalized": "Haji Barkatullah & Co. Peshawar (Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Haji Barkatullah & Co. - Peshawar (Mega Distributor)",
+    "normalized": "Haji Barkatullah & Co. Peshawar (Mega Distributor) Dairy"
   },
   {
     "raw": "Haji Barkatullah & Co. Peshawar (Mega Distributor)",
-    "normalized": "Haji Barkatullah & Co. - Peshawar (Mega Distributor)"
+    "normalized": "Haji Barkatullah & Co. Peshawar (Mega Distributor) Dairy"
   },
   {
     "raw": "Haji Barkatullah & Co.-Peshawar (Mega Distributor) Dairy",
-    "normalized": "Haji Barkatullah & Co. - Peshawar (Mega Distributor)"
+    "normalized": "Haji Barkatullah & Co. Peshawar (Mega Distributor) Dairy"
   },
   {
     "raw": "Badshah Traders-Mardan (Mega Distributor) Dairy",
-    "normalized": "Badshah Traders -Mardan (Mega Distributor)"
+    "normalized": "Badshah Traders-Mardan (Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Badshah Traders -Mardan (Mega Distributor)",
+    "normalized": "Badshah Traders-Mardan (Mega Distributor) Dairy"
   },
   {
     "raw": "Badshah Traders - Mardan (Mega Distributor) Dairy",
-    "normalized": "Badshah Traders -Mardan (Mega Distributor)"
+    "normalized": "Badshah Traders-Mardan (Mega Distributor) Dairy"
   },
   {
     "raw": "Haris Traders & Commission Agent-Karak (Mega Distributor) Dairy",
-    "normalized": "Haris Traders & Commision Agent -Karak (Mega Distributor)"
+    "normalized": "Haris Traders & Commission Agent-Karak (Mega Distributor) Dairy"
   },
   {
-    "raw": "Haris Traders & Commission Agent - Karak (Mega Distributor) Dairy",
-    "normalized": "Haris Traders & Commision Agent -Karak (Mega Distributor)"
+    "raw": "Haris Traders & Commision Agent -Karak (Mega Distributor)",
+    "normalized": "Haris Traders & Commission Agent-Karak (Mega Distributor) Dairy"
   },
   {
     "raw": "Tariq Traders-Mingora Swat (Mega Distributor) Dairy",
-    "normalized": "Tariq Traders - Mingora Swat (Mega Distributor)"
+    "normalized": "Tariq Traders-Mingora Swat (Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Tariq Traders - Mingora Swat (Mega Distributor)",
+    "normalized": "Tariq Traders-Mingora Swat (Mega Distributor) Dairy"
   },
   {
     "raw": "Tariq Traders-Mingora Swat (Mega Distributor) Diary",
-    "normalized": "Tariq Traders - Mingora Swat (Mega Distributor)"
-  },
-  {
-    "raw": "Hafiz Traders-D.I Khan (MEGA Distributor) Dairy",
-    "normalized": "Hafiz Traders - D.I Khan (Mega Distributor)"
-  },
-  {
-    "raw": "Hafiz Traders-D.I Khan (Mega Distributor) Dairy",
-    "normalized": "Hafiz Traders - D.I Khan (Mega Distributor)"
+    "normalized": "Tariq Traders-Mingora Swat (Mega Distributor) Dairy"
   },
   {
     "raw": "Nowroz & Sons-Kohat ( Mega Distributor) Dairy",
-    "normalized": "Hasnain Traders -Kohat (Mega Distributor)"
+    "normalized": "Nowroz & Sons-Kohat ( Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Hasnain Traders -Kohat (Mega Distributor)",
+    "normalized": "Nowroz & Sons-Kohat ( Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Hasnain Traders-Kohat (Mega Distributor) Dairy",
+    "normalized": "Nowroz & Sons-Kohat ( Mega Distributor) Dairy"
   },
   {
     "raw": "Ahmad Traders-Kohat (Mega Distributor) Dairy",
-    "normalized": "Ahmad Traders -Kohat (Mega Distributor)"
+    "normalized": "Ahmad Traders-Kohat (Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Ahmad Traders -Kohat (Mega Distributor)",
+    "normalized": "Ahmad Traders-Kohat (Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Hafiz Traders-D.I Khan (MEGA Distributor) Dairy",
+    "normalized": "Hafiz Traders-D.I Khan (MEGA Distributor) Dairy"
+  },
+  {
+    "raw": "Hafiz Traders - D.I Khan (Mega Distributor)",
+    "normalized": "Hafiz Traders-D.I Khan (MEGA Distributor) Dairy"
   },
   {
     "raw": "Ahmad Traders-Peshawar (Mega Distributor) Dairy",
-    "normalized": "Ahmad Traders -Peshawar (Mega Distributor)"
+    "normalized": "Ahmad Traders-Peshawar (Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Ahmad Traders -Peshawar (Mega Distributor)",
+    "normalized": "Ahmad Traders-Peshawar (Mega Distributor) Dairy"
   },
   {
     "raw": "Abdul Mohaimin Traders-Karak (Mega Distributor) Dairy",
-    "normalized": "Abdul Mohaimin Traders -Karak (Mega Distributor)"
+    "normalized": "Abdul Mohaimin Traders-Karak (Mega Distributor) Dairy"
   },
   {
-    "raw": "Abdul Mohaimin Traders - Karak (Mega Distributor) Dairy",
-    "normalized": "Abdul Mohaimin Traders -Karak (Mega Distributor)"
+    "raw": "Abdul Mohaimin Traders -Karak (Mega Distributor)",
+    "normalized": "Abdul Mohaimin Traders-Karak (Mega Distributor) Dairy"
+  },
+  {
+    "raw": "Vaccent",
+    "normalized": "Vaccent"
+  },
+  {
+    "raw": "Vaccant",
+    "normalized": "Vaccent"
   }
 ]
