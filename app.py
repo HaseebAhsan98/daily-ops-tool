@@ -620,26 +620,32 @@ with tab_achievement_kpk:
 
                             # today
                             today_tgt = float(t.get("today_target", t.get("today_target_tray", 0)))
-                            today_ach = float(r_ach.get("today", 0.0))
+                            today_ach = sum(r_ach.get(("today", sz), 0.0) for sz in ["112ml", "180ml", "225ml"])
                             today_pct = (today_ach / today_tgt * 100) if today_tgt else 0.0
 
-                            # Milker-FM
+                            # Milker-FM (180ml & 225ml only!)
                             milker_tgt = float(t.get("milker_target", 0))
-                            milker_ach = float(r_ach.get("Milker-FM", 0.0))
+                            milker_ach = sum(r_ach.get(("Milker-FM", sz), 0.0) for sz in ["180ml", "225ml"])
                             milker_pct = (milker_ach / milker_tgt * 100) if milker_tgt else 0.0
 
-                            # JuicePet Bottle
+                            # JuicePet Bottle (Maza & Polly juices)
                             jpb_tgt = float(t.get("jpb_target", 0))
-                            jpb_ach = float(r_ach.get("JuicePet Bottle", 0.0))
+                            jpb_ach = sum(r_ach.get(("JuicePet Bottle", sz), 0.0) for sz in [
+                                "Maza 250ml", "Polly 250ml",
+                                "Maza 500ml", "Polly 500ml",
+                                "Maza 1000ml", "Polly 1000ml",
+                                "Maza 1500ml", "Polly 1500ml",
+                                "Maza 2000ml", "Polly 2000ml",
+                            ])
                             jpb_pct = (jpb_ach / jpb_tgt * 100) if jpb_tgt else 0.0
 
                             # Maza Chaika
-                            chaika_ach = float(r_ach.get("Maza Chaika", 0.0))
+                            chaika_ach = float(r_ach.get(("today", "chaika"), 0.0) + r_ach.get(("Maza Chaika", "180ml"), 0.0))
 
-                            # Yazo
-                            yazo_tgt = float(t.get("yazoo_target", 0))
-                            yazo_ach = float(r_ach.get("Yazo", 0.0))
-                            yazo_pct = (yazo_ach / yazo_tgt * 100) if yazo_tgt else 0.0
+                            # Yazoo
+                            yazoo_tgt = float(t.get("yazoo_target", 0))
+                            yazoo_ach = sum(r_ach.get(("Yazoo-FM", sz), 0.0) for sz in ["112ml", "180ml", "225ml"])
+                            yazoo_pct = (yazoo_ach / yazoo_tgt * 100) if yazoo_tgt else 0.0
 
                             preview_rows.append({
                                 "S.No": t.get("sno", ""),
@@ -655,16 +661,16 @@ with tab_achievement_kpk:
                                 "JuicePet Ach": f"{jpb_ach:,.0f}",
                                 "JuicePet %": f"{jpb_pct:.0f}%",
                                 "Maza Chaika": f"{chaika_ach:,.0f}",
-                                "Yazo Target": f"{yazo_tgt:,.0f}",
-                                "Yazo Ach": f"{yazo_ach:,.0f}",
-                                "Yazo %": f"{yazo_pct:.0f}%",
+                                "Yazoo Target": f"{yazoo_tgt:,.0f}",
+                                "Yazoo Ach": f"{yazoo_ach:,.0f}",
+                                "Yazoo %": f"{yazoo_pct:.0f}%",
                                 "_tse": tse_name,
                                 "_raw": {
                                     "tt": today_tgt, "ta": today_ach,
                                     "mt": milker_tgt, "ma": milker_ach,
                                     "jt": jpb_tgt, "ja": jpb_ach,
                                     "ca": chaika_ach,
-                                    "yt": yazo_tgt, "ya": yazo_ach
+                                    "yt": yazoo_tgt, "ya": yazoo_ach
                                 }
                             })
 
@@ -698,7 +704,7 @@ with tab_achievement_kpk:
 
                         gt_jt = sum(r["_raw"]["jt"] for r in preview_rows)
                         gt_ja = sum(r["_raw"]["ja"] for r in preview_rows)
-                        gt_jp = (gt_ja / gt_jt * 100) if gt_jt else 0.0
+                        gt_jp = (gt_ja / gt_jt * 100) if gt_jp else 0.0
 
                         gt_ca = sum(r["_raw"]["ca"] for r in preview_rows)
 
@@ -723,9 +729,9 @@ with tab_achievement_kpk:
                             "JuicePet Ach": f"{vac_ja:,.0f}",
                             "JuicePet %": f"{vac_jp:.0f}%",
                             "Maza Chaika": f"{vac_ca:,.0f}",
-                            "Yazo Target": f"{vac_yt:,.0f}",
-                            "Yazo Ach": f"{vac_ya:,.0f}",
-                            "Yazo %": f"{vac_yp:.0f}%",
+                            "Yazoo Target": f"{vac_yt:,.0f}",
+                            "Yazoo Ach": f"{vac_ya:,.0f}",
+                            "Yazoo %": f"{vac_yp:.0f}%",
                         })
                         display_preview.append({
                             "S.No": "",
@@ -741,9 +747,9 @@ with tab_achievement_kpk:
                             "JuicePet Ach": f"{gt_ja:,.0f}",
                             "JuicePet %": f"{gt_jp:.0f}%",
                             "Maza Chaika": f"{gt_ca:,.0f}",
-                            "Yazo Target": f"{gt_yt:,.0f}",
-                            "Yazo Ach": f"{gt_ya:,.0f}",
-                            "Yazo %": f"{gt_yp:.0f}%",
+                            "Yazoo Target": f"{gt_yt:,.0f}",
+                            "Yazoo Ach": f"{gt_ya:,.0f}",
+                            "Yazoo %": f"{gt_yp:.0f}%",
                         })
 
                         kpk_tab1, kpk_tab2 = st.tabs(["📊 Target vs Achievement Preview", "📋 Summary Log Preview"])
@@ -772,13 +778,13 @@ with tab_achievement_kpk:
         tot_kpk_today = sum(t.get("today_target", t.get("today_target_tray", 0)) for t in kpk_current_targets)
         tot_kpk_milker = sum(t.get("milker_target", 0) for t in kpk_current_targets)
         tot_kpk_jpb = sum(t.get("jpb_target", 0) for t in kpk_current_targets)
-        tot_kpk_yazo = sum(t.get("yazoo_target", 0) for t in kpk_current_targets)
+        tot_kpk_yazoo = sum(t.get("yazoo_target", 0) for t in kpk_current_targets)
 
         km1, km2, km3, km4 = st.columns(4)
         km1.metric("today Target Trays", f"{tot_kpk_today:,.0f}")
         km2.metric("Milker-FM Target Trays", f"{tot_kpk_milker:,.0f}")
         km3.metric("JuicePet Bottle Target Trays", f"{tot_kpk_jpb:,.0f}")
-        km4.metric("Yazo Target Trays", f"{tot_kpk_yazo:,.0f}")
+        km4.metric("Yazoo Target Trays", f"{tot_kpk_yazoo:,.0f}")
 
         st.write("")
 
@@ -791,7 +797,7 @@ with tab_achievement_kpk:
             "today_target": st.column_config.NumberColumn("today Target In Tray", min_value=0, step=25),
             "milker_target": st.column_config.NumberColumn("Milker-FM Target In Tray", min_value=0, step=500),
             "jpb_target": st.column_config.NumberColumn("JuicePet Target In Tray", min_value=0, step=50),
-            "yazoo_target": st.column_config.NumberColumn("Yazo Target In Tray", min_value=0, step=25),
+            "yazoo_target": st.column_config.NumberColumn("Yazoo Target In Tray", min_value=0, step=25),
         }
         kpk_visible_cols = [
             "sno", "distributor", "tse", "today_target", "milker_target", "jpb_target", "yazoo_target"
